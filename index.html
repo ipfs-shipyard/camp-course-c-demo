@@ -5,16 +5,21 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<title>Static Template</title>
+	<title>Course C Exercise</title>
 </head>
 
 <body>
 	<h1>Course C Exercise</h1>
-	<a href="https://github.com/ipfs/js-ipfs-http-client">js-ipfs-http-client</a>
+	<ul>
+		<li><a href="https://github.com/jimpick/course-c-static">GitHub</a></li>
+		<li><a href="https://github.com/ipfs/js-ipfs-http-client">js-ipfs-http-client</a></li>
+		<li><a href="https://github.com/ipfs/js-ipfs">js-ipfs</a></li>
+	</ul>
 
-	<br />
+	<hr>
 
 	<div>
+		<h3>Upload to IPFS</h3>
 		<form id='captureMedia'>
 			<input type='file' /><br />
 		</form>
@@ -22,13 +27,14 @@
 			<a id='addLink' target='_blank' href=''>
 			</a>
 		</div>
+		<h3>Download from IPFS</h3>
 		<div>
 			<button id='get'>Get the content</button>
 			<br />
 			<b id='data'></b>
 		</div>
+		<h3>Publish to IPNS</h3>
 		<div>
-			<h3> Publish </h3>
 			<button id='publish'>publish</button>
 			<br />
 			<b id='publishLink'></b>
@@ -54,7 +60,7 @@ ipfs.on('ready', () => {
       publishLink: document.querySelector('#publishLink')
   };
 
-    console.log(dom.form)
+  console.log(dom.form)
 
   dom.form.addEventListener('change', (event)=> {
     event.stopPropagation()
