@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Static Template</title>
+</head>
+
+<body>
+	<h1>Course C Exercise</h1>
+	<a href="https://github.com/ipfs/js-ipfs-http-client">js-ipfs-http-client</a>
+
+	<br />
+
+	<div>
+		<form id='captureMedia'>
+			<input type='file' /><br />
+		</form>
+		<div>
+			<a id='addLink' target='_blank' href=''>
+			</a>
+		</div>
+		<div>
+			<button id='get'>Get the content</button>
+			<br />
+			<b id='data'></b>
+		</div>
+		<div>
+			<h3> Publish </h3>
+			<button id='publish'>publish</button>
+			<br />
+			<b id='publishLink'></b>
+		</div>
+	</div>
+</body>
+
+<script src="https://unpkg.com/ipfs-http-client/dist/index.min.js"></script>
+<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
+<script>
+	const ipfs = new window.Ipfs()
+
+ipfs.on('ready', () => {
+  console.log('ready')
+})
+	// const ipfs = window.IpfsHttpClient('localhost', '59685')
+	const dom = {
+      form: document.querySelector('#captureMedia'),
+      addLink: document.querySelector('#addLink'),
+      get: document.querySelector('#get'),
+      data: document.querySelector('#data'),
+      publish: document.querySelector('#publish'),
+      publishLink: document.querySelector('#publishLink')
+  };
+
+    console.log(dom.form)
+
+  dom.form.addEventListener('change', (event)=> {
+    event.stopPropagation()
+    event.preventDefault()
+    const file = event.target.files[0]
+  
+    
+    ipfs.add(window.IpfsHttpClient.Buffer.from('file.name'), { progress: (prog) => console.log(`received: ${prog}`) })
+      .then((response) => {
+        console.log(response)
+        ipfsId = response[0].hash
+        console.log(ipfsId)
+        dom.addLink.href = 'https://ipfs.io/ipfs/'+ipfsId 
+        dom.addLink.textContent= ipfsId
+      }).catch((err) => {
+        console.error(err)
+      })
+  })
+
+  dom.get.addEventListener('click', event=> {
+    ipfs.cat(dom.addLink.textContent)
+    .then(data => {
+      dom.data.textContent = data.toString()
+    })
+    .catch(err => console.log(err))  
+  })
+
+  dom.publish.addEventListener('click', event=> {
+    dom.publishLink.textContent = 'Publishing...'
+    ipfs.name.publish(dom.addLink.textContent)
+    .then(({name, value}) => {
+      dom.publishLink.textContent = `Published ${value} to /ipns/${name}` 
+    })
+    .catch(err => console.log(err))  
+  })
+</script>
+
+</html>
