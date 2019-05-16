@@ -5,11 +5,22 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<!-- TODO: tachyons are good for prototyping, be can move final styles to external file when all is ready  -->
+	<link href="https://unpkg.com/tachyons@4.11.1/css/tachyons.min.css" rel="stylesheet">
+	<link href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" rel="stylesheet">
+
 	<title>Course C Exercise</title>
 </head>
 
-<body>
-	<h1>Course C Exercise</h1>
+<body class="sans-serif">
+	<header class="pv3 ph2 ph3-l bg-navy cf">
+		<img src="https://ipfs.io/images/ipfs-logo.svg" class="dib fr v-mid" style="height:50px">
+		<h1 class='aqua fw2 montserrat dib ma0 pv2 ph1 v-mid f3 lh-copy'> IPFS Camp 2019: Course C Exercise</h1>
+	</header>
+
+<div class="ph3-l mw9">
+
+	<h2>References</h2>
 	<ul>
 		<li><a href="https://github.com/jimpick/course-c-static">GitHub</a></li>
 		<li><a href="https://codesandbox.io/s/7kzny7rj6q">Codesandbox</a></li>
@@ -17,48 +28,80 @@
 		<li><a href="https://github.com/ipfs/js-ipfs">js-ipfs</a></li>
 	</ul>
 
-	<hr>
+	<hr class="mv3 bb bw1 b--black-10">
 
+	<h2>Publishing Immutable Data (<code>/ipfs/</code>)</h2>
+	<h3>1. Add avatar image to IPFS</h3>
+	<form id='captureMedia'>
+		<input type='file' /><br />
+	</form>
 	<div>
-		<h3>Upload to IPFS</h3>
-		<form id='captureMedia'>
-			<input type='file' /><br />
-		</form>
-		<div>
-			<a id='addLink' target='_blank' href=''>
-			</a>
-		</div>
-		<h3>Download from IPFS</h3>
-		<div>
-			<button id='get'>Get the content</button>
-			<br />
-			<b id='data'></b>
-		</div>
-		<h3>Publish to IPNS</h3>
-		<div>
-			<button id='publish'>publish</button>
-			<br />
-			<b id='publishLink'></b>
-		</div>
+		<a id='addLink' target='_blank' href=''>
+		</a>
 	</div>
-</body>
+	<h3>2. Load avatar from IPFS</h3>
+	<div>
+		<button id='get'>Get the content</button>
+		<br />
+		<img id='data'/>
+	</div>
+
+	<hr class="mv3 bb bw1 b--black-10">
+
+	<h2>Updating Mutable Pointers (<code>/ipns/</code>)</h2>
+	<h3>3. Edit below and add to IPFS</h3>
+	<div>
+	<div>
+		<textarea id="editJson" name="editJson" rows="5" cols="80" class="monospace">{
+name: 'CHANGE_ME',
+avatar: 'CHANGE_ME_TO_CID',
+about: 'CHANGE_ME'
+}</textarea><br/>
+		<button id='addJson'>Save to IPFS</button>
+		<br />
+		<a id='jsonLink' target='_blank' href=''>
+		</a>
+	</div>
+
+	<h3>4. Publish a reference to the above snapshot at <code>/ipns/{peerId}</code></h3>
+	<div>
+		<button id='publish' disabled='true'>publish</button>
+		<br />
+		<b id='publishLink'></b>
+	</div>
+	<h3>5. See the changes on the dashboard</h3>
+
+
+
+<hr class="mv3 bb bw1 b--black-10">
+
+
+	<!-- this should be moved to separate file and embedded via iframe -->
+	<h2>Peer Dashboard</h2>
+	<div id="peerBoard" class="flex flex-wrap justify-around ph3-l">
+	</div>
+<div>
 
 <script src="https://unpkg.com/ipfs-http-client/dist/index.min.js"></script>
 <script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
 <script>
 	const ipfs = new window.Ipfs()
 
-ipfs.on('ready', () => {
-  console.log('ready')
-})
+	ipfs.on('ready', () => {
+	  console.log('ready')
+	})
 	// const ipfs = window.IpfsHttpClient('localhost', '59685')
 	const dom = {
       form: document.querySelector('#captureMedia'),
       addLink: document.querySelector('#addLink'),
       get: document.querySelector('#get'),
       data: document.querySelector('#data'),
+			editJson: document.querySelector('#editJson'),
+			addJson: document.querySelector('#addJson'),
+			jsonLink: document.querySelector('#jsonLink'),
       publish: document.querySelector('#publish'),
-      publishLink: document.querySelector('#publishLink')
+      publishLink: document.querySelector('#publishLink'),
+			peerBoard: document.querySelector('#peerBoard')
   };
 
   console.log(dom.form)
@@ -67,36 +110,120 @@ ipfs.on('ready', () => {
     event.stopPropagation()
     event.preventDefault()
     const file = event.target.files[0]
-  
-    
-    ipfs.add(window.IpfsHttpClient.Buffer.from('file.name'), { progress: (prog) => console.log(`received: ${prog}`) })
-      .then((response) => {
-        console.log(response)
-        ipfsId = response[0].hash
-        console.log(ipfsId)
-        dom.addLink.href = 'https://ipfs.io/ipfs/'+ipfsId 
-        dom.addLink.textContent= ipfsId
-      }).catch((err) => {
-        console.error(err)
-      })
+
+		const addToIpfs = (reader) => {
+			const buffer = window.IpfsHttpClient.Buffer.from(reader.result)
+	    ipfs.add(buffer, { progress: (prog) => console.log(`received: ${prog}`) })
+	      .then((response) => {
+	        console.log(response)
+	        const cid = response[0].hash
+	        console.log(cid)
+	        dom.addLink.href = 'https://ipfs.io/ipfs/'+cid
+	        dom.addLink.textContent= cid
+	      }).catch((err) => {
+	        console.error(err)
+	      })
+		}
+
+		// TODO: remove need for reading from reader and pass file object to ipfs.add directly
+		const reader = new window.FileReader()
+		reader.onloadend = () => addToIpfs(reader)
+		reader.readAsArrayBuffer(file)
   })
 
   dom.get.addEventListener('click', event=> {
     ipfs.cat(dom.addLink.textContent)
     .then(data => {
-      dom.data.textContent = data.toString()
+			// Instead of pointing at HTTP Gateway
+			// small images can be inlined using Data URLs (RFC 2397)
+			const img = data.toString('base64')
+      dom.data.src = "data:image/*;base64," + img;
     })
-    .catch(err => console.log(err))  
+    .catch(err => console.log(err))
+  })
+
+  dom.addJson.addEventListener('click', event=> {
+    ipfs.add(window.IpfsHttpClient.Buffer.from(dom.editJson.value), { progress: (prog) => console.log(`received: ${prog}`) })
+      .then((response) => {
+        console.log(response)
+        const cid = response[0].hash
+        console.log(cid)
+        dom.jsonLink.href = 'https://ipfs.io/ipfs/' + cid
+        dom.jsonLink.textContent = cid
+				dom.publish.disabled = false
+      }).catch((err) => {
+        console.error(err)
+      })
   })
 
   dom.publish.addEventListener('click', event=> {
     dom.publishLink.textContent = 'Publishing...'
-    ipfs.name.publish(dom.addLink.textContent)
+    ipfs.name.publish(dom.jsonLink.textContent)
     .then(({name, value}) => {
-      dom.publishLink.textContent = `Published ${value} to /ipns/${name}` 
+      dom.publishLink.textContent = `Published ${value} to /ipns/${name}`
     })
-    .catch(err => console.log(err))  
+    .catch(err => console.log(err))
   })
+
+
+  /* TODO: we need to move dashboard to separate filr and load it via iframe, otherwise template is too noisy */
+
+	const peerCardTemplate = `<article class="mw5 center bg-white br3 pa3 pa4-ns mv3 ba b--black-10" id="peer-PEER_ID">
+	<div>
+    <img src="https://robohash.org/PEER_ID.png?set=set4" class="br-100 h4 w4 dib ba b--black-05 pa2" title="PEER_ID">
+    <h1 class="f3 mb2 truncate" title="PEER_NAME">PEER_NAME</h1>
+		<h2 class="f5 fw4 charcoal-muted mt0 truncate" title="PEER_ADDR">PEER_ADDR</h2>
+		<hr class="mw3 bb bw1 b--black-10">
+	</div>
+	  <p class="lh-copy measure center f6 black-70">
+	    PEER_ABOUT
+	  </p>
+	</article>`
+
+	function renderPeerBoard() {
+		/*
+		TODO:
+		 - show peers from course only:
+		   - filter out bootstrap nodes
+		   - show only peers form the same networks
+		   - (for course) show only peers from specific ipv4 network (match first octects of IP)
+ 		 - Add green frame/checkbox to nodes that exposed { name, avatar, about } over IPNS
+ 		*/
+		ipfs.swarm.peers()
+		.then((peers) => {
+			try {
+				if (!Array.isArray(peers)) throw peers
+				for (let peer of peers) {
+					renderPeer(peer)
+				}
+			} catch (err) {
+				console.error(err)
+			}
+		})
+	}
+	function renderPeer(peerInfo) {
+		/*
+		TODO: show PeerID if PEER_NAME is missing
+		*/
+		const peerAddr = peerInfo.addr.toString()
+		const peerId = peerInfo.peer.toJSON().id
+		const cardContent = peerCardTemplate.replace(/PEER_ID/g, peerId).replace(/PEER_ADDR/g, peerAddr)
+		const peerCard = document.querySelector('#peer-' + peerId)
+		if (peerCard != null) {
+			// console.log(`updating peerId`, peerId)
+			newPeerCard = peerCard.cloneNode(true)
+			const tmp = document.createElement('div')
+			tmp.innerHTML = cardContent
+			peerBoard.replaceChild(tmp.firstChild, peerCard)
+		} else {
+			// console.log(`adding new peerId`, peerId)
+			peerBoard.innerHTML += cardContent
+		}
+	}
+	// refresh dashboard
+	renderPeerBoard()
+	setInterval(renderPeerBoard, 3000);
 </script>
 
+</body>
 </html>
