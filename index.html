@@ -15,7 +15,7 @@
 <body class="sans-serif">
 	<header class="pv3 ph2 ph3-l bg-navy cf">
 		<img src="https://ipfs.io/images/ipfs-logo.svg" class="dib fr v-mid" style="height:50px">
-		<h1 class='aqua fw2 montserrat dib ma0 pv2 ph1 v-mid f3 lh-copy'> IPFS Camp 2019: Course C Exercise</h1>
+		<h1 class='aqua fw2 montserrat dib ma0 pv2 ph1 v-mid f3 lh-copy'> IPFS Camp 2019: Course C Exercise <strong>(DRAFT)</strong></h1>
 	</header>
 
 <div class="ph3-l mw9">
@@ -30,21 +30,19 @@
 
 	<hr class="mv3 bb bw1 b--black-10">
 
+
 	<h2>Publishing Immutable Data (<code>/ipfs/</code>)</h2>
 	<h3>1. Add avatar image to IPFS</h3>
 	<form id='captureMedia'>
-		<input type='file' /><br />
+		<input type='file' class="pointer" /><br />
 	</form>
-	<div>
-		<a id='addLink' target='_blank' href=''>
-		</a>
-	</div>
+	<a id='addLink' target='_blank' href='' title="Open at HTTP Gateway"></a>
+
+
 	<h3>2. Load avatar from IPFS</h3>
-	<div>
-		<button id='get'>Get the content</button>
-		<br />
-		<img id='data'/>
-	</div>
+	<button id='get' class="pointer">Get the content</button>
+	<br />
+	<img id='data' class="h4 dib pa2"/>
 
 	<hr class="mv3 bb bw1 b--black-10">
 
@@ -52,7 +50,7 @@
 	<h3>3. Edit below and add to IPFS</h3>
 	<div>
 	<div>
-		<textarea id="editJson" name="editJson" rows="5" cols="80" class="monospace">{
+		<textarea id="editJson" name="editJson" rows="5" cols="80" class="monospace shadow-5 mb3">{
 name: 'CHANGE_ME',
 avatar: 'CHANGE_ME_TO_CID',
 about: 'CHANGE_ME'
@@ -65,26 +63,17 @@ about: 'CHANGE_ME'
 
 	<h3>4. Publish a reference to the above snapshot at <code>/ipns/{peerId}</code></h3>
 	<div>
-		<button id='publish' disabled='true'>publish</button>
+		<button id='publish' disabled='true'>Publish to IPNS</button>
 		<br />
-		<b id='publishLink'></b>
+		<a id='publishLink'></a>
 	</div>
 	<h3>5. See the changes on the dashboard</h3>
 
 
-
-<hr class="mv3 bb bw1 b--black-10">
-
-
-	<!-- this should be moved to separate file and embedded via iframe -->
-	<h2>Peer Dashboard</h2>
-	<div id="peerBoard" class="flex flex-wrap justify-around ph3-l">
-	</div>
-<div>
-
-<script src="https://unpkg.com/ipfs-http-client/dist/index.min.js"></script>
-<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
+<script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
+<script src="https://unpkg.com/ipfs@0.35.0/dist/index.min.js"></script>
 <script>
+  const httpGateway = 'https://ipfs.io'
 	const ipfs = new window.Ipfs()
 
 	ipfs.on('ready', () => {
@@ -118,7 +107,7 @@ about: 'CHANGE_ME'
 	        console.log(response)
 	        const cid = response[0].hash
 	        console.log(cid)
-	        dom.addLink.href = 'https://ipfs.io/ipfs/'+cid
+	        dom.addLink.href = `${httpGateway}/ipfs/${cid}`
 	        dom.addLink.textContent= cid
 	      }).catch((err) => {
 	        console.error(err)
@@ -148,7 +137,7 @@ about: 'CHANGE_ME'
         console.log(response)
         const cid = response[0].hash
         console.log(cid)
-        dom.jsonLink.href = 'https://ipfs.io/ipfs/' + cid
+        dom.jsonLink.href = `${httpGateway}/ipfs/${cid}`
         dom.jsonLink.textContent = cid
 				dom.publish.disabled = false
       }).catch((err) => {
@@ -160,69 +149,90 @@ about: 'CHANGE_ME'
     dom.publishLink.textContent = 'Publishing...'
     ipfs.name.publish(dom.jsonLink.textContent)
     .then(({name, value}) => {
+			dom.publishLink.href = `${httpGateway}/ipns/${name}`
       dom.publishLink.textContent = `Published ${value} to /ipns/${name}`
     })
     .catch(err => console.log(err))
   })
 
+</script>
 
-  /* TODO: we need to move dashboard to separate filr and load it via iframe, otherwise template is too noisy */
 
-	const peerCardTemplate = `<article class="mw5 center bg-white br3 pa3 pa4-ns mv3 ba b--black-10" id="peer-PEER_ID">
-	<div>
-    <img src="https://robohash.org/PEER_ID.png?set=set4" class="br-100 h4 w4 dib ba b--black-05 pa2" title="PEER_ID">
-    <h1 class="f3 mb2 truncate" title="PEER_NAME">PEER_NAME</h1>
-		<h2 class="f5 fw4 charcoal-muted mt0 truncate" title="PEER_ADDR">PEER_ADDR</h2>
-		<hr class="mw3 bb bw1 b--black-10">
-	</div>
-	  <p class="lh-copy measure center f6 black-70">
-	    PEER_ABOUT
-	  </p>
-	</article>`
+<!-- PEER DASHBOARD -->
+<hr class="mv3 bb bw1 b--black-10">
+	<h2>Peer Dashboard</h2>
+	<div id="peerBoard"></div>
+<div>
 
-	function renderPeerBoard() {
-		/*
-		TODO:
-		 - show peers from course only:
-		   - filter out bootstrap nodes
-		   - show only peers form the same networks
-		   - (for course) show only peers from specific ipv4 network (match first octects of IP)
- 		 - Add green frame/checkbox to nodes that exposed { name, avatar, about } over IPNS
- 		*/
-		ipfs.swarm.peers()
-		.then((peers) => {
-			try {
-				if (!Array.isArray(peers)) throw peers
-				for (let peer of peers) {
-					renderPeer(peer)
-				}
-			} catch (err) {
-				console.error(err)
-			}
-		})
-	}
-	function renderPeer(peerInfo) {
-		/*
-		TODO: show PeerID if PEER_NAME is missing
+<script type="module">
+	import { html, Component, render } from 'https://unpkg.com/htm@2.1.1/preact/standalone.mjs';
+
+	/*
+	TODO:
+	 - show peers from course only:
+	   - filter out bootstrap nodes
+	   - show only peers form the same networks
+	   - (for course) show only peers from specific ipv4 network (match first octects of IP)
+		 - Add green frame/checkbox to nodes that exposed { name, avatar, about } over IPNS
 		*/
-		const peerAddr = peerInfo.addr.toString()
-		const peerId = peerInfo.peer.toJSON().id
-		const cardContent = peerCardTemplate.replace(/PEER_ID/g, peerId).replace(/PEER_ADDR/g, peerAddr)
-		const peerCard = document.querySelector('#peer-' + peerId)
-		if (peerCard != null) {
-			// console.log(`updating peerId`, peerId)
-			newPeerCard = peerCard.cloneNode(true)
-			const tmp = document.createElement('div')
-			tmp.innerHTML = cardContent
-			peerBoard.replaceChild(tmp.firstChild, peerCard)
-		} else {
-			// console.log(`adding new peerId`, peerId)
-			peerBoard.innerHTML += cardContent
+
+	async function refreshPeers() {
+		try {
+			const peers = await ipfs.swarm.peers()
+			console.log('refreshPeers().peers', peers)
+			if (!peers) return []
+			return peers.map(info => {
+				return {
+					id: info.peer.toJSON().id,
+					name: undefined, // TODO
+					avatar: undefined, // TODO
+					addr: info.addr.toString(),
+					about: undefined // TODO
+				}
+			})
+		} catch (err) {
+			console.error(err)
+			return []
 		}
 	}
-	// refresh dashboard
-	renderPeerBoard()
-	setInterval(renderPeerBoard, 3000);
+
+	class PeerDashboard extends Component {
+
+		async componentDidMount() {
+			const refreshData = async () => {
+				const peers = await refreshPeers()
+				this.setState({ peers })
+			}
+			refreshData()
+			this.timer = setInterval(refreshData, 3000)
+		}
+
+		componentWillUnmount() {
+			clearInterval(this.timer)
+		}
+
+		render({}, { peers = [] }) {
+			const peerCard = ({id, name, avatar, addr, about}) => {
+				const avatarUrl = avatar
+					? `${httpGateway}/ipfs/${avatar}`
+					: `https://robohash.org/${id}.png?set=set4`
+				return html`<div class="mw5 center bg-snow-muted br3 pa3 pa4-ns mv3 ba b--black-10 hover-bg-white">
+							<img src="${avatarUrl}" class="br-100 h4 w4 dib ba bg-white b--black-05 pa2 shadow-5" title="${id}" />
+							<h1 class="f3 mb2 truncate" title="${name || id}">${name || id}</h1>
+							<h2 class="f5 fw4 charcoal-muted mt0 truncate" title="${addr}">${addr}</h2>
+							<hr class="mw3 bb bw1 b--black-10" />
+						<p class="lh-copy measure center f6 black-70">${about || '(no about)'}</p>
+					</div>`
+			}
+			return html`
+				<section class="flex flex-wrap">
+				  ${peers.length ? '' : html`<p>Waiting for peer discovery..</p>`}
+					${peers.map(peerCard)}
+				</section>`
+		}
+	}
+
+	render(html`<${PeerDashboard} />`, document.getElementById('peerBoard'))
 </script>
 
 </body>
