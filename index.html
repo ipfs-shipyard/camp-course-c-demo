@@ -74,7 +74,8 @@ about: 'CHANGE_ME'
 <!-- -->
 
 <script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
-<script src="https://unpkg.com/ipfs@0.35.0/dist/index.min.js"></script>
+<!-- TODO: replace with 0.36.1 as we need https://github.com/ipfs/js-ipfs/pull/2092 -->
+<script src="https://ipfs.io/ipfs/bafybeidpyx4mr5qhn4lwhef7f43w3eksmzs7knufhz6g35ey7vlxmk7y2a/index.min.js"></script>
 <script>
   const httpGateway = 'https://ipfs.io'
 
@@ -97,65 +98,60 @@ about: 'CHANGE_ME'
 			peerBoard: document.querySelector('#peerBoard')
   }
 
-  dom.addFileInput.addEventListener('change', (event)=> {
+  dom.addFileInput.addEventListener('change', async event => {
     event.stopPropagation()
     event.preventDefault()
-    const file = event.target.files[0]
+		try {
+			const file = event.target.files[0]
+    	const response = await ipfs.add(file, { progress: (prog) => console.log(`received: ${prog}`) })
 
-		const addToIpfs = (reader) => {
-			const buffer = window.IpfsHttpClient.Buffer.from(reader.result)
-	    ipfs.add(buffer, { progress: (prog) => console.log(`received: ${prog}`) })
-	      .then((response) => {
-	        console.log(response)
-	        const cid = response[0].hash
-	        console.log(cid)
-	        dom.addCidOutput.href = `${httpGateway}/ipfs/${cid}`
-	        dom.addCidOutput.textContent= cid
-					dom.getButton.disabled = false
-	      }).catch((err) => {
-	        console.error(err)
-	      })
-		}
+			console.log('ipfs.add response', response)
 
-		// TODO: remove need for reading from reader and pass file object to ipfs.add directly
-		const reader = new window.FileReader()
-		reader.onloadend = () => addToIpfs(reader)
-		reader.readAsArrayBuffer(file)
+      const cid = response[0].hash
+
+      dom.addCidOutput.href = `${httpGateway}/ipfs/${cid}`
+      dom.addCidOutput.textContent = cid
+			dom.getButton.disabled = false
+    } catch(err) {
+      console.error(err)
+    }
   })
 
-  dom.getButton.addEventListener('click', event=> {
-    ipfs.cat(dom.addCidOutput.textContent)
-    .then(data => {
+  dom.getButton.addEventListener('click', async event => {
+		try {
+    	const data = await ipfs.cat(dom.addCidOutput.textContent)
 			// Instead of pointing at HTTP Gateway
 			// small images can be inlined using Data URLs (RFC 2397)
 			const img = data.toString('base64')
-      dom.getImage.src = "data:image/*;base64," + img;
-    })
-    .catch(err => console.log(err))
+      dom.getImage.src = "data:image/*;base64," + img
+    } catch(err) {
+			console.log(err)
+		}
   })
 
-  dom.addJson.addEventListener('click', event=> {
-    ipfs.add(window.IpfsHttpClient.Buffer.from(dom.editJson.value), { progress: (prog) => console.log(`received: ${prog}`) })
-      .then((response) => {
-        console.log(response)
-        const cid = response[0].hash
-        console.log(cid)
-        dom.jsonLink.href = `${httpGateway}/ipfs/${cid}`
-        dom.jsonLink.textContent = cid
-				dom.publish.disabled = false
-      }).catch((err) => {
-        console.error(err)
-      })
+  dom.addJson.addEventListener('click', async event => {
+		try {
+			const json = window.IpfsHttpClient.Buffer.from(dom.editJson.value)
+	    const response = await ipfs.add(json, { progress: (prog) => console.log(`received: ${prog}`) })
+	    const cid = response[0].hash
+			console.log('ipfs.add response', response)
+	    dom.jsonLink.href = `${httpGateway}/ipfs/${cid}`
+	    dom.jsonLink.textContent = cid
+			dom.publish.disabled = false
+    } catch (err) {
+      console.error(err)
+    }
   })
 
-  dom.publish.addEventListener('click', event=> {
-    dom.publishLink.textContent = 'Publishing...'
-    ipfs.name.publish(dom.jsonLink.textContent)
-    .then(({name, value}) => {
+  dom.publish.addEventListener('click', async event => {
+		try {
+	    dom.publishLink.textContent = 'Publishing...'
+	    const {name, value} = await ipfs.name.publish(dom.jsonLink.textContent)
 			dom.publishLink.href = `${httpGateway}/ipns/${name}`
       dom.publishLink.textContent = `Published ${value} to /ipns/${name}`
-    })
-    .catch(err => console.log(err))
+    } catch(err) {
+			console.log(err)
+		}
   })
 
 </script>
@@ -220,11 +216,12 @@ about: 'CHANGE_ME'
 				const avatarUrl = avatar
 					? `${httpGateway}/ipfs/${avatar}`
 					: `https://robohash.org/${id}.png?set=set4`
-				return html`<div class="mw5 center bg-snow-muted br3 pa3 pa4-ns mv3 ba b--black-10 hover-bg-white">
-							<img src="${avatarUrl}" class="br-100 h4 w4 dib ba bg-white b--black-05 pa2 shadow-5" title="${id}" />
+				const avatarStyle = `background-image: url('${avatarUrl}');background-size: cover;`
+				return html`<div class="mw5 center bg-snow-muted br3 pa3 pa4-ns mv3 ba b--black-20 hover-bg-white">
+							<div style="${avatarStyle}" class="br-100 h4 w4 shadow-5" title="${id}"></div>
 							<h1 class="f3 mb2 truncate" title="${name || id}">${name || id}</h1>
 							<h2 class="f5 fw4 charcoal-muted mt0 truncate" title="${addr}">${addr}</h2>
-							<hr class="mw3 bb bw1 b--black-10" />
+							<hr class="dbi mw4 bb bw1 b--black-10" />
 						<p class="lh-copy measure center f6 black-70">${about || '(no about)'}</p>
 					</div>`
 			}
