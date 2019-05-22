@@ -8,8 +8,8 @@
 	<!-- TODO: tachyons are good for prototyping, be can move final styles to external file when all is ready  -->
 	<link href="https://unpkg.com/tachyons@4.11.1/css/tachyons.min.css" rel="stylesheet">
 	<link href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" rel="stylesheet">
-
 	<title>Course C Exercise</title>
+
 </head>
 
 <body class="sans-serif">
@@ -22,80 +22,82 @@
 
 	<h2>References</h2>
 	<ul>
-		<li><a href="https://github.com/jimpick/course-c-static">GitHub</a></li>
-		<li><a href="https://codesandbox.io/s/7kzny7rj6q">Codesandbox</a></li>
-		<li><a href="https://github.com/ipfs/js-ipfs-http-client">js-ipfs-http-client</a></li>
-		<li><a href="https://github.com/ipfs/js-ipfs">js-ipfs</a></li>
+		<li><a href="https://github.com/jimpick/course-c-static">GitHub</a> / <a href="https://codesandbox.io/s/github/jimpick/course-c-static">Codesandbox</a></li>
+		<li><a href="https://github.com/ipfs/js-ipfs">js-ipfs</a> / <a href="https://github.com/ipfs/js-ipfs-http-client">js-ipfs-http-client</a></li>
 	</ul>
 
 	<hr class="mv3 bb bw1 b--black-10">
 
+	<section class="mv4">
 
-	<h2>Publishing Immutable Data (<code>/ipfs/</code>)</h2>
-	<h3>1. Add avatar image to IPFS</h3>
-	<form id='captureMedia'>
-		<input type='file' class="pointer" /><br />
-	</form>
-	<a id='addLink' target='_blank' href='' title="Open at HTTP Gateway"></a>
+		<h2>Publishing Immutable Data (<code class="navy">/ipfs/</code>)</h2>
+
+		<h3>1. Add avatar image to IPFS</h3>
+		<form id='addFileInput'>
+			<input type='file' class="pointer" /><br />
+		</form>
+		<a id='addCidOutput' target='_blank' href='' title="Open at HTTP Gateway"></a>
 
 
-	<h3>2. Load avatar from IPFS</h3>
-	<button id='get' class="pointer">Get the content</button>
-	<br />
-	<img id='data' class="h4 dib pa2"/>
+		<h3>2. Load avatar from IPFS</h3>
+		<button id='getButton' type="button" disabled>Get the content</button>
+		<br />
+		<img id='getImage' class="w4 dib pa2"/>
+
+	</section>
 
 	<hr class="mv3 bb bw1 b--black-10">
 
-	<h2>Updating Mutable Pointers (<code>/ipns/</code>)</h2>
-	<h3>3. Edit below and add to IPFS</h3>
-	<div>
-	<div>
+	<section class="mv4">
+
+		<h2>Updating Mutable Pointers (<code class="navy">/ipns/</code>)</h2>
+
+		<h3>3. Edit below and add to IPFS</h3>
 		<textarea id="editJson" name="editJson" rows="5" cols="80" class="monospace shadow-5 mb3">{
 name: 'CHANGE_ME',
 avatar: 'CHANGE_ME_TO_CID',
 about: 'CHANGE_ME'
 }</textarea><br/>
-		<button id='addJson'>Save to IPFS</button>
+		<button id="addJson" type="button">Save to IPFS</button>
 		<br />
 		<a id='jsonLink' target='_blank' href=''>
 		</a>
-	</div>
 
-	<h3>4. Publish a reference to the above snapshot at <code>/ipns/{peerId}</code></h3>
-	<div>
-		<button id='publish' disabled='true'>Publish to IPNS</button>
-		<br />
+		<h3>4. Publish a reference to the above snapshot at <code class="navy">/ipns/{peerId}</code></h3>
+		<button id='publish' type="button" disabled>Publish to IPNS</button><br />
 		<a id='publishLink'></a>
-	</div>
-	<h3>5. See the changes on the dashboard</h3>
 
+		<h3>5. See the changes on the dashboard</h3>
+
+</section>
+
+<!-- -->
 
 <script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
 <script src="https://unpkg.com/ipfs@0.35.0/dist/index.min.js"></script>
 <script>
   const httpGateway = 'https://ipfs.io'
+
+  <!-- start js-ipfs in page context -->
 	const ipfs = new window.Ipfs()
 
-	ipfs.on('ready', () => {
-	  console.log('ready')
-	})
-	// const ipfs = window.IpfsHttpClient('localhost', '59685')
+	<!-- OR use js-ipfs-http-client and connect to remote API -->
+	// const ipfs = window.IpfsHttpClient('localhost', '5001')
+
 	const dom = {
-      form: document.querySelector('#captureMedia'),
-      addLink: document.querySelector('#addLink'),
-      get: document.querySelector('#get'),
-      data: document.querySelector('#data'),
+      addFileInput: document.querySelector('#addFileInput'),
+      addCidOutput: document.querySelector('#addCidOutput'),
+      getButton: document.querySelector('#getButton'),
+      getImage: document.querySelector('#getImage'),
 			editJson: document.querySelector('#editJson'),
 			addJson: document.querySelector('#addJson'),
 			jsonLink: document.querySelector('#jsonLink'),
       publish: document.querySelector('#publish'),
       publishLink: document.querySelector('#publishLink'),
 			peerBoard: document.querySelector('#peerBoard')
-  };
+  }
 
-  console.log(dom.form)
-
-  dom.form.addEventListener('change', (event)=> {
+  dom.addFileInput.addEventListener('change', (event)=> {
     event.stopPropagation()
     event.preventDefault()
     const file = event.target.files[0]
@@ -107,8 +109,9 @@ about: 'CHANGE_ME'
 	        console.log(response)
 	        const cid = response[0].hash
 	        console.log(cid)
-	        dom.addLink.href = `${httpGateway}/ipfs/${cid}`
-	        dom.addLink.textContent= cid
+	        dom.addCidOutput.href = `${httpGateway}/ipfs/${cid}`
+	        dom.addCidOutput.textContent= cid
+					dom.getButton.disabled = false
 	      }).catch((err) => {
 	        console.error(err)
 	      })
@@ -120,13 +123,13 @@ about: 'CHANGE_ME'
 		reader.readAsArrayBuffer(file)
   })
 
-  dom.get.addEventListener('click', event=> {
-    ipfs.cat(dom.addLink.textContent)
+  dom.getButton.addEventListener('click', event=> {
+    ipfs.cat(dom.addCidOutput.textContent)
     .then(data => {
 			// Instead of pointing at HTTP Gateway
 			// small images can be inlined using Data URLs (RFC 2397)
 			const img = data.toString('base64')
-      dom.data.src = "data:image/*;base64," + img;
+      dom.getImage.src = "data:image/*;base64," + img;
     })
     .catch(err => console.log(err))
   })
@@ -177,9 +180,10 @@ about: 'CHANGE_ME'
 		*/
 
 	async function refreshPeers() {
+		if (ipfs.isOnline && !ipfs.isOnline()) return []
 		try {
 			const peers = await ipfs.swarm.peers()
-			console.log('refreshPeers().peers', peers)
+			console.log('refreshPeers()', peers)
 			if (!peers) return []
 			return peers.map(info => {
 				return {
