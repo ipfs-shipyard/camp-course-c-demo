@@ -77,9 +77,22 @@ about: 'CHANGE_ME'
 <script src="https://unpkg.com/ipfs@0.36.1/dist/index.min.js"></script>
 <script>
   const httpGateway = 'https://ipfs.io'
+	const websocketStar = '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
+	const boostrapNodes = [
+		'/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
+		'/dns4/sfo-3.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
+		'/dns4/nyc-2.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLV4Bbm51jM9C4gDYZQ9Cy3U6aXMJDAbzgu2fzaDs64',
+		'/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
+		'/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
+	]
 
   <!-- start js-ipfs in page context -->
-	const ipfs = new window.Ipfs()
+	const ipfs = new window.Ipfs({
+		config: {
+			Bootstrap: boostrapNodes,
+			Addresses: { Swarm: [websocketStar] }
+		}
+	})
 
 	<!-- OR use js-ipfs-http-client and connect to remote API -->
 	// const ipfs = window.IpfsHttpClient('localhost', '5001')

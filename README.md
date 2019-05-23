@@ -19,7 +19,7 @@ TODO
 #### js-ipfs
 
 - customize bootstrap nodes and add one from LAN
-- (optional) add ws-star?
+- (optional) add ws-star (makes peer filtering easy)
 
 #### go-ipfs configuration
 
