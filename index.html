@@ -18,65 +18,65 @@
 		<h1 class='aqua fw2 montserrat dib ma0 pv2 ph1 v-mid f3 lh-copy'> IPFS Camp 2019: Course C Exercise <strong>(DRAFT)</strong></h1>
 	</header>
 
-<div class="ph3-l mw9">
+	<div class="ph3 mw9">
 
-	<h2>References</h2>
-	<ul>
-		<li><a href="https://github.com/jimpick/course-c-static">GitHub</a> / <a href="https://codesandbox.io/s/github/jimpick/course-c-static">Codesandbox</a></li>
-		<li><a href="https://github.com/ipfs/js-ipfs">js-ipfs</a> / <a href="https://github.com/ipfs/js-ipfs-http-client">js-ipfs-http-client</a></li>
-	</ul>
+		<h2>References</h2>
+		<ul>
+			<li><a href="https://github.com/jimpick/course-c-static">GitHub</a> / <a href="https://codesandbox.io/s/github/jimpick/course-c-static">Codesandbox</a></li>
+			<li><a href="https://github.com/ipfs/js-ipfs">js-ipfs</a> / <a href="https://github.com/ipfs/js-ipfs-http-client">js-ipfs-http-client</a></li>
+		</ul>
 
-	<hr class="mv3 bb bw1 b--black-10">
+		<hr class="mv3 bb bw1 b--black-10">
 
-	<section class="mv4">
+		<section class="mv4">
 
-		<h2>Publishing Immutable Data (<code class="navy">/ipfs/</code>)</h2>
+			<h2>Publishing Immutable Data (<code class="navy">/ipfs/</code>)</h2>
 
-		<h3>1. Add avatar image to IPFS</h3>
-		<form id='addFileInput'>
-			<input type='file' class="pointer" /><br />
-		</form>
-		<a id='addCidOutput' target='_blank' href='' title="Open at HTTP Gateway"></a>
+			<h3>1. Add avatar image to IPFS</h3>
+			<form id='addFileInput'>
+				<input type='file' class="pointer" /><br />
+			</form>
+			<a id='addCidOutput' target='_blank' href='' title="Open at HTTP Gateway"></a>
 
 
-		<h3>2. Load avatar from IPFS</h3>
-		<button id='getButton' type="button" disabled>Get the content</button>
-		<br />
-		<img id='getImage' class="w4 dib pa2"/>
+			<h3>2. Load avatar from IPFS</h3>
+			<button id='getButton' type="button" disabled>Get the content</button>
+			<br />
+			<img id='getImage' class="w4 dib pa2" />
 
-	</section>
+		</section>
 
-	<hr class="mv3 bb bw1 b--black-10">
+		<hr class="mv3 bb bw1 b--black-10">
 
-	<section class="mv4">
+		<section class="mv4">
 
-		<h2>Updating Mutable Pointers (<code class="navy">/ipns/</code>)</h2>
+			<h2>Updating Mutable Pointers (<code class="navy">/ipns/</code>)</h2>
 
-		<h3>3. Edit below and add to IPFS</h3>
-		<textarea id="editJson" name="editJson" rows="5" cols="80" class="monospace shadow-5 mb3">{
+			<h3>3. Edit below and add to IPFS</h3>
+			<textarea id="editJson" name="editJson" rows="5" cols="80" class="monospace shadow-5 mb3 w-100">{
 "name": "CHANGE_ME",
 "avatar": "CHANGE_ME_TO_CID",
 "about": "CHANGE_ME"
-}</textarea><br/>
-		<button id="addJson" type="button">Save to IPFS</button>
-		<br />
-		<a id='jsonLink' target='_blank' href=''>
-		</a>
+}</textarea><br />
+			<button id="addJson" type="button">Save to IPFS</button>
+			<br />
+			<a id='jsonLink' target='_blank' href=''>
+			</a>
 
-		<h3>4. Publish a reference to the above snapshot at <code class="navy">/ipns/{peerId}</code></h3>
-		<button id='publish' type="button" disabled>Publish to IPNS</button><br />
-		<a id='publishLink'></a>
+			<h3>4. Publish a reference to the above snapshot at <code class="navy">/ipns/{peerId}</code></h3>
+			<button id='publish' type="button" disabled>Publish to IPNS</button><br />
+			<a id='publishLink'></a>
 
-		<h3>5. See the changes on the dashboard</h3>
+			<h3>5. See the changes on the dashboard</h3>
 
-</section>
+		</section>
 
-<!-- -->
+		<!-- -->
 
-<script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
-<script src="https://unpkg.com/ipfs@0.36.1/dist/index.min.js"></script>
-<script>
-  const httpGateway = 'https://ipfs.io'
+		<script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
+		<script src="https://unpkg.com/ipfs@0.36.1/dist/index.min.js"></script>
+		<script>
+			const httpGateway = 'https://ipfs.io'
 	const websocketStar = '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
 	const boostrapNodes = [
 		'/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
@@ -169,14 +169,14 @@
 </script>
 
 
-<!-- PEER DASHBOARD -->
-<hr class="mv3 bb bw1 b--black-10">
-	<h2>Peer Dashboard</h2>
-	<div id="peerBoard"></div>
-<div>
+		<!-- PEER DASHBOARD -->
+		<hr class="mv3 bb bw1 b--black-10">
+		<h2>Peer Dashboard</h2>
+		<div id="peerBoard"></div>
+		<div>
 
-<script type="module">
-	import { html, Component, render } from 'https://unpkg.com/htm@2.1.1/preact/standalone.mjs';
+			<script type="module">
+				import { html, Component, render } from 'https://unpkg.com/htm@2.1.1/preact/standalone.mjs';
 
 	/*
 	TODO:
@@ -280,4 +280,5 @@
 </script>
 
 </body>
+
 </html>
