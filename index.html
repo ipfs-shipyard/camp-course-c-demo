@@ -54,9 +54,9 @@
 
 		<h3>3. Edit below and add to IPFS</h3>
 		<textarea id="editJson" name="editJson" rows="5" cols="80" class="monospace shadow-5 mb3">{
-name: 'CHANGE_ME',
-avatar: 'CHANGE_ME_TO_CID',
-about: 'CHANGE_ME'
+"name": "CHANGE_ME",
+"avatar": "CHANGE_ME_TO_CID",
+"about": "CHANGE_ME"
 }</textarea><br/>
 		<button id="addJson" type="button">Save to IPFS</button>
 		<br />
@@ -187,24 +187,54 @@ about: 'CHANGE_ME'
 		 - Add green frame/checkbox to nodes that exposed { name, avatar, about } over IPNS
 		*/
 
-	async function refreshPeers() {
-		if (ipfs.isOnline && !ipfs.isOnline()) return []
+	async function jsonFromIPNS(id) {
 		try {
-			const peers = await ipfs.swarm.peers()
-			console.log('refreshPeers()', peers)
-			if (!peers) return []
-			return peers.map(info => {
-				return {
-					id: info.peer.toJSON().id,
-					name: undefined, // TODO
-					avatar: undefined, // TODO
+			// ideally: const result = await ipfs.cat(`/ipns/${id}`)
+			const result = await ipfs.name.resolve(`/ipns/${id}`)
+			if ('path' in result) {
+				const data = await ipfs.cat(result.path)
+				console.log('json', data.toString())
+				const json = JSON.parse(data.toString())
+				json.ipns = true
+				return json
+			}
+		} catch (err) {
+			if (err.message && err.message.includes('record requested was not found')) return
+			console.error(err)
+		}
+		return {}
+	}
+
+	async function refreshSelf() {
+		const { id, addresses } = await ipfs.id()
+		const addr = addresses.find(addr => addr.includes(websocketStar) || `(/p2p-circuit/ipfs/${id})`)
+		const json = await jsonFromIPNS(id)
+		return Object.assign({ id, addr }, json)
+	}
+
+	async function refreshPeers() {
+		const peers = []
+		if (ipfs.isOnline && !ipfs.isOnline()) return peers
+		peers.push(await refreshSelf())
+		try {
+			const peerInfos = await ipfs.swarm.peers()
+			console.log('refreshPeers → ipfs.swarm.peers()', peerInfos)
+			for (let info of peerInfos) {
+				const id = info.peer.toJSON().id
+				const json = await jsonFromIPNS(id)
+				const manifest = Object.assign({
+					id,
 					addr: info.addr.toString(),
-					about: undefined // TODO
-				}
-			})
+					name: undefined,
+					avatar: undefined,
+					about: undefined
+				}, json)
+				peers.push(manifest)
+			}
+			return peers
 		} catch (err) {
 			console.error(err)
-			return []
+			return peers
 		}
 	}
 
@@ -224,13 +254,14 @@ about: 'CHANGE_ME'
 		}
 
 		render({}, { peers = [] }) {
-			const peerCard = ({id, name, avatar, addr, about}) => {
+			const peerCard = ({id, name, avatar, addr, about, ipns}) => {
 				const avatarUrl = avatar
 					? `${httpGateway}/ipfs/${avatar}`
 					: `https://robohash.org/${id}.png?set=set4`
 				const avatarStyle = `background-image: url('${avatarUrl}');background-size: cover;`
-				return html`<div class="mw5 center bg-snow-muted br3 pa3 pa4-ns mv3 ba b--black-20 hover-bg-white">
-							<div style="${avatarStyle}" class="br-100 h4 w4 shadow-5" title="${id}"></div>
+				const cardStyle = `grow mw5 center br3 pa3 mv3 ba ${ipns ? 'b--green bg-white bw2 shadow-5' : 'b--black-20 bg-snow-muted'} hover-bg-white`
+				return html`<div class="${cardStyle}">
+							<div style="${avatarStyle}" class="grow br-100 h4 w4 shadow-5" title="${id}"></div>
 							<h1 class="f3 mb2 truncate" title="${name || id}">${name || id}</h1>
 							<h2 class="f5 fw4 charcoal-muted mt0 truncate" title="${addr}">${addr}</h2>
 							<hr class="dbi mw4 bb bw1 b--black-10" />
@@ -238,7 +269,7 @@ about: 'CHANGE_ME'
 					</div>`
 			}
 			return html`
-				<section class="flex flex-wrap">
+				<section class="flex flex-wrap transition-all">
 				  ${peers.length ? '' : html`<p>Waiting for peer discovery..</p>`}
 					${peers.map(peerCard)}
 				</section>`
