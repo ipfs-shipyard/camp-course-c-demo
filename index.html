@@ -28,55 +28,10 @@
 
 		<hr class="mv3 bb bw1 b--black-10">
 
-		<section class="mv4">
-
-			<h2>Publishing Immutable Data (<code class="navy">/ipfs/</code>)</h2>
-
-			<h3>1. Add avatar image to IPFS</h3>
-			<form id='addFileInput'>
-				<input type='file' class="pointer" /><br />
-			</form>
-			<a id='addCidOutput' target='_blank' href='' title="Open at HTTP Gateway"></a>
-
-
-			<h3>2. Load avatar from IPFS</h3>
-			<button id='getButton' type="button" disabled>Get the content</button>
-			<br />
-			<img id='getImage' class="w4 dib pa2" />
-
-		</section>
-
-		<hr class="mv3 bb bw1 b--black-10">
-
-		<section class="mv4">
-
-			<h2>Updating Mutable Pointers (<code class="navy">/ipns/</code>)</h2>
-
-			<h3>3. Edit below and add to IPFS</h3>
-			<textarea id="editJson" name="editJson" rows="5" cols="80" class="monospace shadow-5 mb3 w-100">{
-"name": "CHANGE_ME",
-"avatar": "CHANGE_ME_TO_CID",
-"about": "CHANGE_ME"
-}</textarea><br />
-			<button id="addJson" type="button">Save to IPFS</button>
-			<br />
-			<a id='jsonLink' target='_blank' href=''>
-			</a>
-
-			<h3>4. Publish a reference to the above snapshot at <code class="navy">/ipns/{peerId}</code></h3>
-			<button id='publish' type="button" disabled>Publish to IPNS</button><br />
-			<a id='publishLink'></a>
-
-			<h3>5. See the changes on the dashboard</h3>
-
-		</section>
-
-		<!-- -->
-
-		<script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
-		<script src="https://unpkg.com/ipfs@0.36.1/dist/index.min.js"></script>
-		<script>
-			const httpGateway = 'https://ipfs.io'
+<script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
+<script src="https://unpkg.com/ipfs@0.36.1/dist/index.min.js"></script>
+<script>
+	const httpGateway = 'https://ipfs.io'
 	const websocketStar = '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
 	const boostrapNodes = [
 		'/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
@@ -97,95 +52,130 @@
 	<!-- OR use js-ipfs-http-client and connect to remote API -->
 	// const ipfs = window.IpfsHttpClient('localhost', '5001')
 
-	const dom = {
-      addFileInput: document.querySelector('#addFileInput'),
-      addCidOutput: document.querySelector('#addCidOutput'),
-      getButton: document.querySelector('#getButton'),
-      getImage: document.querySelector('#getImage'),
-			editJson: document.querySelector('#editJson'),
-			addJson: document.querySelector('#addJson'),
-			jsonLink: document.querySelector('#jsonLink'),
-      publish: document.querySelector('#publish'),
-      publishLink: document.querySelector('#publishLink'),
-			peerBoard: document.querySelector('#peerBoard')
-  }
-
-  dom.addFileInput.addEventListener('change', async event => {
-    event.stopPropagation()
-    event.preventDefault()
-		try {
-			const file = event.target.files[0]
-    	const response = await ipfs.add(file, { progress: (prog) => console.log(`received: ${prog}`) })
-
-			console.log('ipfs.add response', response)
-
-      const cid = response[0].hash
-
-      dom.addCidOutput.href = `${httpGateway}/ipfs/${cid}`
-      dom.addCidOutput.textContent = cid
-			dom.getButton.disabled = false
-    } catch(err) {
-      console.error(err)
-    }
-  })
-
-  dom.getButton.addEventListener('click', async event => {
-		try {
-    	const data = await ipfs.cat(dom.addCidOutput.textContent)
-			// Instead of pointing at HTTP Gateway
-			// small images can be inlined using Data URLs (RFC 2397)
-			const img = data.toString('base64')
-      dom.getImage.src = "data:image/*;base64," + img
-    } catch(err) {
-			console.log(err)
-		}
-  })
-
-  dom.addJson.addEventListener('click', async event => {
-		try {
-			const json = window.IpfsHttpClient.Buffer.from(dom.editJson.value)
-	    const response = await ipfs.add(json, { progress: (prog) => console.log(`received: ${prog}`) })
-	    const cid = response[0].hash
-			console.log('ipfs.add response', response)
-	    dom.jsonLink.href = `${httpGateway}/ipfs/${cid}`
-	    dom.jsonLink.textContent = cid
-			dom.publish.disabled = false
-    } catch (err) {
-      console.error(err)
-    }
-  })
-
-  dom.publish.addEventListener('click', async event => {
-		try {
-	    dom.publishLink.textContent = 'Publishing...'
-	    const {name, value} = await ipfs.name.publish(dom.jsonLink.textContent)
-			dom.publishLink.href = `${httpGateway}/ipns/${name}`
-      dom.publishLink.textContent = `Published ${value} to /ipns/${name}`
-    } catch(err) {
-			console.log(err)
-		}
-  })
-
 </script>
 
+		<section class="mv4">
+
+			<h2>Publishing Immutable Data (<code class="navy">/ipfs/</code>)</h2>
+
+			<h3>1. Add avatar image to IPFS</h3>
+			<form id='addFileInput'>
+				<input type='file' class="pointer" /><br />
+			</form>
+			<a id='addCidOutput' target='_blank' href='' title="Open at HTTP Gateway"></a>
+			<script>
+				const addFileInput = document.querySelector('#addFileInput')
+				addFileInput.addEventListener('change', async event => {
+					event.stopPropagation()
+					event.preventDefault()
+					try {
+						const file = event.target.files[0]
+						const response = await ipfs.add(file, { progress: (prog) => console.log(`received: ${prog}`) })
+						console.log('ipfs.add response', response)
+					  const cid = response[0].hash
+						const addCidOutput = document.querySelector('#addCidOutput')
+					  addCidOutput.href = `${httpGateway}/ipfs/${cid}`
+					  addCidOutput.textContent = cid
+						document.querySelector('#getButton').disabled = false
+					} catch(err) {
+					  console.error(err)
+					}
+				})
+			</script>
+
+			<h3>2. Load avatar from IPFS</h3>
+			<button id='getButton' type="button" disabled>Get the content</button><br />
+			<img id='getImage' class="w4 dib pa2" />
+			<script>
+				const getButton = document.querySelector('#getButton')
+				getButton.addEventListener('click', async event => {
+					try {
+						// Small images can be inlined using Data URLs (RFC 2397)
+						const data = await ipfs.cat(addCidOutput.textContent)
+						const img = data.toString('base64')
+						document.querySelector('#getImage').src = `data:image/*;base64,${img}`
+					} catch(err) {
+						console.log(err)
+					}
+				})
+			</script>
+
+		</section>
+
+		<hr class="mv3 bb bw1 b--black-10">
+
+		<section class="mv4">
+
+			<h2>Updating Mutable Pointers (<code class="navy">/ipns/</code>)</h2>
+
+			<h3>3. Edit below and add to IPFS</h3>
+			<textarea id="editJson" name="editJson" rows="5" cols="80" class="monospace shadow-5 mb3 w-100">{
+"name": "CHANGE_ME",
+"avatar": "CHANGE_ME_TO_CID",
+"about": "CHANGE_ME"
+}</textarea><br />
+			<button id="addJson" type="button">Save to IPFS</button><br />
+			<a id='jsonCidLink' target='_blank' href=''></a>
+			<script>
+				const addJsonButton = document.querySelector('#addJson')
+				addJsonButton.addEventListener('click', async event => {
+					try {
+						const textarea = document.querySelector('#editJson')
+						const json = window.IpfsHttpClient.Buffer.from(textarea.value)
+						const response = await ipfs.add(json, {
+							progress: (prog) => console.log(`received: ${prog}`)
+						})
+						const cid = response[0].hash
+						console.log('ipfs.add response', response)
+						const jsonCidLink = document.querySelector('#jsonCidLink')
+						const publishJson = document.querySelector('#publishJson')
+						jsonCidLink.href = `${httpGateway}/ipfs/${cid}`
+						jsonCidLink.textContent = cid
+						publishJson.disabled = false
+					} catch (err) {
+						console.error(err)
+					}
+				})
+			</script>
+
+			<h3>4. Publish a reference to the above snapshot at <code class="navy">/ipns/{peerId}</code></h3>
+			<button id='publishJson' type="button" disabled>Publish to IPNS</button><br />
+			<a id='jsonIpnsLink'></a>
+			<script>
+				const publishJson = document.querySelector('#publishJson')
+				publishJson.addEventListener('click', async event => {
+					try {
+						const jsonIpnsLink = document.querySelector('#jsonIpnsLink')
+						jsonIpnsLink.textContent = 'Publishing...'
+						const {name, value} = await ipfs.name.publish(jsonCidLink.textContent)
+						jsonIpnsLink.href = `${httpGateway}/ipns/${name}`
+						jsonIpnsLink.textContent = `Published ${value} to /ipns/${name}`
+					} catch(err) {
+						console.log(err)
+					}
+				})
+			</script>
+
+			<h3>5. See the changes on the dashboard</h3>
+		</section>
 
 		<!-- PEER DASHBOARD -->
+
 		<hr class="mv3 bb bw1 b--black-10">
 		<h2>Peer Dashboard</h2>
 		<div id="peerBoard"></div>
-		<div>
 
-			<script type="module">
-				import { html, Component, render } from 'https://unpkg.com/htm@2.1.1/preact/standalone.mjs';
+<script type="module">
+	import { html, Component, render } from 'https://unpkg.com/htm@2.1.1/preact/standalone.mjs';
 
 	/*
 	TODO:
-	 - show peers from course only:
-	   - filter out bootstrap nodes
-	   - show only peers form the same networks
-	   - (for course) show only peers from specific ipv4 network (match first octects of IP)
-		 - Add green frame/checkbox to nodes that exposed { name, avatar, about } over IPNS
-		*/
+	- show peers from course only:
+	- [ ] show only peers form the same networks
+	- [ ] (for course) show only peers from specific ipv4 network (match first octects of IP)
+	- [x] Add green frame/checkbox to nodes that exposed { name, avatar, about } over IPNS
+	- [ ] Show green nodes first
+	*/
 
 	async function jsonFromIPNS(id) {
 		try {
@@ -195,6 +185,7 @@
 				const data = await ipfs.cat(result.path)
 				console.log('json', data.toString())
 				const json = JSON.parse(data.toString())
+				json.avatar = await ipfs.cat(json.avatar)
 				json.ipns = true
 				return json
 			}
@@ -256,7 +247,7 @@
 		render({}, { peers = [] }) {
 			const peerCard = ({id, name, avatar, addr, about, ipns}) => {
 				const avatarUrl = avatar
-					? `${httpGateway}/ipfs/${avatar}`
+					? `data:image/*;base64,${avatar.toString('base64')}`
 					: `https://robohash.org/${id}.png?set=set4`
 				const avatarStyle = `background-image: url('${avatarUrl}');background-size: cover;`
 				const cardStyle = `grow mw5 center br3 pa3 mv3 ba ${ipns ? 'b--green bg-white bw2 shadow-5' : 'b--black-20 bg-snow-muted'} hover-bg-white`
@@ -279,6 +270,7 @@
 	render(html`<${PeerDashboard} />`, document.getElementById('peerBoard'))
 </script>
 
+</div>
 </body>
 
 </html>
