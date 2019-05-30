@@ -9,7 +9,21 @@
 	<link href="https://unpkg.com/tachyons@4.11.1/css/tachyons.min.css" rel="stylesheet">
 	<link href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" rel="stylesheet">
 	<title>Course C Exercise</title>
-
+	<style>
+		div.exercise:not(:target) {
+			display: none;
+		}
+		div.exercise:target {
+			display: block;
+		}
+		.exercise {
+			box-shadow: 0 48px 80px -32px rgba(0,0,0,0.3);
+			margin-bottom: 80px;
+			padding: 2em;
+			border: 3px solid #9ad4db;
+			border-radius: .5rem;
+		}
+	</style>
 </head>
 
 <body class="sans-serif">
@@ -20,20 +34,30 @@
 
 	<div class="ph3 mw9">
 
-		<h2>References</h2>
-		<ul>
-			<li><a href="https://github.com/jimpick/course-c-static">GitHub</a> / <a href="https://codesandbox.io/s/github/jimpick/course-c-static">Codesandbox</a></li>
-			<li><a href="https://github.com/ipfs/js-ipfs">js-ipfs</a> / <a href="https://github.com/ipfs/js-ipfs-http-client">js-ipfs-http-client</a></li>
-		</ul>
+	<div class="flex">
+	  <div class="w-50">
+			<h3>Exercises</h3>
+			<ol>
+				<li><a href="#exercise-1">Talking to API from JS</a></li>
+				<li><a href="#exercise-2">Publishing Immutable Data</a></li>
+				<li><a href="#exercise-3">Updating Mutable Pointers</a></li>
+			</ol>
+		</div>
+		<div class="w-50">
+			<h3>References</h3>
+			<ul>
+				<li><a href="https://github.com/jimpick/course-c-static">GitHub</a> / <a href="https://codesandbox.io/s/github/jimpick/course-c-static">Codesandbox</a></li>
+				<li>node / client: <a href="https://github.com/ipfs/js-ipfs">js-ipfs</a> / <a href="https://github.com/ipfs/js-ipfs-http-client">js-ipfs-http-client</a></li>
+				<li>JS API: <a href="https://github.com/ipfs/interface-js-ipfs-core/tree/master/SPEC">interface-js-ipfs-core/SPEC</a></li>
+			</ul>
+		</div>
+	</div>
 
-		<hr class="mv3 bb bw1 b--black-10">
-
-		<section class="mv4">
-
-			<h2>Talk to IPFS Node</h2>
-
-			<h3>0. Set up access to API and show node's manifest</h3>
-			<div class="monospace ba br3 pa3 mv3 b--black-20 bg-snow-muted w-100 truncate">
+		<div id="exercise-1" class="exercise">
+			<h2>Exercise #1: Talking to API from JS</h2>
+			<h3>1. Create API instance (local or remote)</h3>
+			<h3>2. Confirm it works by printing <code>ipfs id</code> below:</h3>
+			<div class="monospace ba pa3 b--black-20 bg-snow-muted w-100 truncate">
 				<pre id="ipfsId">(result of "ipfs id" will appear here)</pre>
 			</div>
 
@@ -67,13 +91,11 @@ ipfs.on('ready', () => {
 	ipfs.id().then((data) => ipfsId.textContent = JSON.stringify(data,null,2))
 })
 </script>
-		</section>
+		</div>
 
-		<hr class="mv3 bb bw1 b--black-10">
+		<div id="exercise-2" class="exercise">
 
-		<section class="mv4">
-
-			<h2>Publishing Immutable Data (<code class="navy">/ipfs/</code>)</h2>
+			<h2>Exercise #2: Publishing Immutable Data (<code class="navy">/ipfs/</code>)</h2>
 
 			<h3>1. Add avatar image to IPFS</h3>
 			<form id='addFileInput'>
@@ -116,17 +138,13 @@ ipfs.on('ready', () => {
 					}
 				})
 			</script>
+		</div>
 
-		</section>
-
-		<hr class="mv3 bb bw1 b--black-10">
-
-		<section class="mv4">
-
-			<h2>Updating Mutable Pointers (<code class="navy">/ipns/</code>)</h2>
+		<div id="exercise-3" class="exercise">
+			<h2>Exercise #3: Updating Mutable Pointers (<code class="navy">/ipns/</code>)</h2>
 
 			<h3>3. Edit below and add to IPFS</h3>
-			<textarea id="editJson" name="editJson" rows="5" cols="80" class="monospace shadow-5 mb3 w-100">{
+			<textarea id="editJson" name="editJson" rows="5" cols="80" class="monospace mb3 pa2 ba b--black-20 bg-snow-muted w-100">{
 "name": "CHANGE_ME",
 "avatar": "CHANGE_ME_TO_CID",
 "about": "CHANGE_ME"
@@ -174,11 +192,8 @@ ipfs.on('ready', () => {
 			</script>
 
 			<h3>5. See the changes on the dashboard</h3>
-		</section>
+		</div>
 
-		<!-- PEER DASHBOARD -->
-
-		<hr class="mv3 bb bw1 b--black-10">
 		<h2>Peer Dashboard</h2>
 		<div id="peerBoard"></div>
 
@@ -285,7 +300,6 @@ ipfs.on('ready', () => {
 
 	render(html`<${PeerDashboard} />`, document.getElementById('peerBoard'))
 </script>
-
 </div>
 </body>
 
