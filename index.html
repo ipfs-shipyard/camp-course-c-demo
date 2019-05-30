@@ -28,6 +28,15 @@
 
 		<hr class="mv3 bb bw1 b--black-10">
 
+		<section class="mv4">
+
+			<h2>Talk to IPFS Node</h2>
+
+			<h3>0. Set up access to API and show node's manifest</h3>
+			<div class="monospace ba br3 pa3 mv3 b--black-20 bg-snow-muted w-100 truncate">
+				<pre id="ipfsId">(result of "ipfs id" will appear here)</pre>
+			</div>
+
 <script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
 <script src="https://unpkg.com/ipfs@0.36.1/dist/index.min.js"></script>
 <script>
@@ -52,7 +61,15 @@
 	<!-- OR use js-ipfs-http-client and connect to remote API -->
 	// const ipfs = window.IpfsHttpClient('localhost', '5001')
 
+const ipfsId = document.querySelector('#ipfsId')
+
+ipfs.on('ready', () => {
+	ipfs.id().then((data) => ipfsId.textContent = JSON.stringify(data,null,2))
+})
 </script>
+		</section>
+
+		<hr class="mv3 bb bw1 b--black-10">
 
 		<section class="mv4">
 
@@ -183,7 +200,6 @@
 			const result = await ipfs.name.resolve(`/ipns/${id}`)
 			if ('path' in result) {
 				const data = await ipfs.cat(result.path)
-				console.log('json', data.toString())
 				const json = JSON.parse(data.toString())
 				json.avatar = await ipfs.cat(json.avatar)
 				json.ipns = true
