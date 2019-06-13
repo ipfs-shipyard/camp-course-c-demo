@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<!-- TODO: tachyons are good for prototyping, be can move final styles to external file when all is ready  -->
+	<link href="https://unpkg.com/tachyons@4.11.1/css/tachyons.min.css" rel="stylesheet">
+	<link href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" rel="stylesheet">
+	<title>Course C Exercise</title>
+	<style>
+		.exercise {
+			box-shadow: 0 48px 80px -32px rgba(0,0,0,0.3);
+			margin: 80px;
+			padding: 2em;
+			border: 3px solid #9ad4db;
+			border-radius: .5rem;
+		}
+	</style>
+</head>
+
+<body class="sans-serif">
+	<header class="pv3 ph2 ph3-l bg-navy cf">
+		<img src="https://ipfs.io/images/ipfs-logo.svg" class="dib fr v-mid" style="height:50px">
+		<h1 class='aqua fw2 montserrat dib ma0 pv2 ph1 v-mid f3 lh-copy'> IPFS Camp 2019: Course C Exercise <strong>(DRAFT)</strong></h1>
+	</header>
+
+	<div class="ph3 mw9">
+
+		<div id="exercise-1" class="exercise">
+			<h2>Exercise #1.1: Talking to Remote API from JS</h2>
+			<h3>1. Create API instance (local or remote)</h3>
+			<h3>2. Confirm it works by printing <code>ipfs id</code> below:</h3>
+			<div class="monospace ba pa3 b--black-20 bg-snow-muted w-100 truncate">
+				<pre id="ipfsId">(result of "ipfs id" will appear here)</pre>
+			</div>
+
+<script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
+<script>
+const httpGateway = 'https://ipfs.io'
+const websocketStar = '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
+
+const ipfs = // Step 1: initialize HTTP Client
+
+const ipfsId = document.querySelector('#ipfsId')
+
+// Step 2: set ipfsId.textContent to value from ipfs.id()
+
+</script>
+		</div>
+
+		</div>
+
+</div>
+</body>
+
+</html>
