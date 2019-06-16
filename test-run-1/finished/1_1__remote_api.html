@@ -44,7 +44,7 @@ const websocketStar = '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-webs
 const ipfs = window.IpfsHttpClient('127.0.0.1', '5001')
 const ipfsId = document.querySelector('#ipfsId')
 
-ipfs.id().then((data) => ipfsId.textContent = JSON.stringify(data,null,2))
+ipfs.id((err, data) => ipfsId.textContent = JSON.stringify(data,null,2) || err)
 
 </script>
 		</div>

@@ -37,7 +37,8 @@
 			</div>
 
 
-<!--script src="https://unpkg.com/ipfs@0.36.1/dist/index.min.js"></script-->
+
+<!-- Step 0: import js-ipfs bundle as in https://github.com/ipfs/js-ipfs#use-in-the-browser -->
 
 <script>
 	/*
@@ -51,15 +52,13 @@
 		'/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
 	]
 	*/
-// Step 0 : import js-ipfs bundle
 const ipfs = // Step 1: initialize js-ipfs, see addresses in ipfs.id
-// Step 2: initialize js-ipfs with  websocketStar and  boostrapNodes
+// Step 2: initialize js-ipfs with  websocketStar and  boostrapNodes above
 const ipfsId = document.querySelector('#ipfsId')
 
 ipfs.on('ready', () => {
-	ipfs.id().then((data) => ipfsId.textContent = JSON.stringify(data,null,2))
+	// Step 3: Copy your call to ipfs.id from previous exercise
 })
-
 
 </script>
 		</div>

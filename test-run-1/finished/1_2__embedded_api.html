@@ -62,7 +62,7 @@
 const ipfsId = document.querySelector('#ipfsId')
 
 ipfs.on('ready', () => {
-	ipfs.id().then((data) => ipfsId.textContent = JSON.stringify(data,null,2))
+	ipfs.id((err, data) => ipfsId.textContent = JSON.stringify(data,null,2) || err)
 })
 </script>
 		</div>
