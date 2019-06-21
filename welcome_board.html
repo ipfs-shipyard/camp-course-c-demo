@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <!-- TODO: tachyons are good for prototyping, be can move final styles to external file when all is ready  -->
+    <link
+      href="https://unpkg.com/tachyons@4.11.1/css/tachyons.min.css"
+      rel="stylesheet"
+    />
+    <link href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" rel="stylesheet" />
+    <title>Course C Exercise</title>
+  </head>
+
+  <body class="sans-serif">
+    <header class="pv3 ph2 ph3-l bg-navy cf">
+      <img
+        src="https://ipfs.io/images/ipfs-logo.svg"
+        class="dib fr v-mid"
+        style="height:50px"
+      />
+      <h1 class="aqua fw2 montserrat dib ma0 pv2 ph1 v-mid f3 lh-copy">
+        IPFS Camp: Course C
+      </h1>
+    </header>
+
+    <div class="ph3">
+      <script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
+      <script src="https://unpkg.com/ipfs@0.36.1/dist/index.min.js"></script>
+      <script>
+        	const httpGateway = 'https://ipfs.io'
+        	const websocketStar = '/dns4/rendezvous.jimpick.com/tcp/9091/wss/p2p-websocket-star'
+        	const boostrapNodes = [
+        		/*
+        		'/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd',
+        		'/dns4/sfo-3.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM',
+        		'/dns4/nyc-2.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLV4Bbm51jM9C4gDYZQ9Cy3U6aXMJDAbzgu2fzaDs64',
+        		'/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
+        		'/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
+        		*/
+        	]
+
+          <!-- start js-ipfs in page context -->
+        	const ipfs = new window.Ipfs({
+        		config: {
+        			Bootstrap: boostrapNodes,
+        			Addresses: { Swarm: [websocketStar] }
+        		}
+        	})
+
+        	<!-- OR use js-ipfs-http-client and connect to remote API -->
+        	// const ipfs = window.IpfsHttpClient('localhost', '5001')
+
+        const ipfsId = document.querySelector('#ipfsId')
+
+        ipfs.on('ready', () => {
+        	ipfs.id().then((data) => ipfsId.textContent = JSON.stringify(data,null,2))
+        })
+      </script>
+
+      <div class="ph3">
+        <div class="flex">
+          <div class="center f-headline">
+            course-c.camp.ipfs.io
+          </div>
+        </div>
+      </div>
+
+      <div id="peerBoard"></div>
+
+      <script type="module">
+        import {
+          html,
+          Component,
+          render
+        } from "https://unpkg.com/htm@2.1.1/preact/standalone.mjs";
+
+        async function jsonFromIPNS(id) {
+          try {
+            // ideally: const result = await ipfs.cat(`/ipns/${id}`)
+            const result = await ipfs.name.resolve(`/ipns/${id}`);
+            if ("path" in result) {
+              const data = await ipfs.cat(result.path);
+              const json = JSON.parse(data.toString());
+              json.avatar = await ipfs.cat(json.avatar);
+              json.ipns = true;
+              return json;
+            }
+          } catch (err) {
+            if (
+              err.message &&
+              err.message.includes("record requested was not found")
+            )
+              return;
+            console.error(err);
+          }
+          return {};
+        }
+
+        async function refreshSelf() {
+          const { id, addresses } = await ipfs.id();
+          const addr = addresses.find(
+            addr => addr.includes(websocketStar) || `(/p2p-circuit/ipfs/${id})`
+          );
+          const json = await jsonFromIPNS(id);
+          return Object.assign({ id, addr }, json);
+        }
+
+        async function refreshPeers() {
+          const peers = [];
+          if (ipfs.isOnline && !ipfs.isOnline()) return peers;
+          peers.push(await refreshSelf());
+          try {
+            const peerInfos = await ipfs.swarm.peers();
+            console.log("refreshPeers → ipfs.swarm.peers()", peerInfos);
+            for (let info of peerInfos) {
+              const id = info.peer.toJSON().id;
+              const json = await jsonFromIPNS(id);
+              const manifest = Object.assign(
+                {
+                  id,
+                  addr: info.addr.toString(),
+                  name: undefined,
+                  avatar: undefined,
+                  about: undefined
+                },
+                json
+              );
+              peers.push(manifest);
+            }
+            return peers;
+          } catch (err) {
+            console.error(err);
+            return peers;
+          }
+        }
+
+        class PeerDashboard extends Component {
+          async componentDidMount() {
+            const refreshData = async () => {
+              const peers = await refreshPeers();
+              this.setState({ peers });
+            };
+            refreshData();
+            this.timer = setInterval(refreshData, 3000);
+          }
+
+          componentWillUnmount() {
+            clearInterval(this.timer);
+          }
+
+          render({}, { peers = [] }) {
+            const peerCard = ({ id, name, avatar, addr, about, ipns }) => {
+              const avatarUrl = avatar
+                ? `data:image/*;base64,${avatar.toString("base64")}`
+                : `https://robohash.org/${id}.png?set=set4`;
+              const avatarStyle = `background-image: url('${avatarUrl}');background-size: cover;`;
+              const cardStyle = `grow mw5 center br3 pa3 mv3 ba ${
+                ipns
+                  ? "b--green bg-white bw2 shadow-5"
+                  : "b--black-20 bg-snow-muted"
+              } hover-bg-white`;
+              return html`
+                <div class="${cardStyle}">
+                  <div
+                    style="${avatarStyle}"
+                    class="grow br-100 h4 w4 shadow-5"
+                    title="${id}"
+                  ></div>
+                  <h1 class="f3 mb2 truncate" title="${name || id}">
+                    ${name || id}
+                  </h1>
+                  <h2
+                    class="f5 fw4 charcoal-muted mt0 truncate"
+                    title="${addr}"
+                  >
+                    ${addr}
+                  </h2>
+                  <hr class="dbi mw4 bb bw1 b--black-10" />
+                  <p class="lh-copy measure center f6 black-70">
+                    ${about || "(no about)"}
+                  </p>
+                </div>
+              `;
+            };
+            return html`
+              <section class="flex flex-wrap transition-all">
+                ${peers.length
+                  ? ""
+                  : html`
+                      <p>Waiting for peer discovery..</p>
+                    `}
+                ${peers.map(peerCard)}
+              </section>
+            `;
+          }
+        }
+
+        render(
+          html`
+            <${PeerDashboard} />
+          `,
+          document.getElementById("peerBoard")
+        );
+      </script>
+    </div>
+  </body>
+</html>
