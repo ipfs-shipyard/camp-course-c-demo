@@ -10,14 +10,6 @@
 	<link href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" rel="stylesheet">
 	<title>Course C Exercise</title>
 	<style>
-	  /* TODO: make it work with codesandbox and without page reload
-		div.exercise:not(:target) {
-			display: none;
-		}
-		div.exercise:target {
-			display: block;
-		}
-		*/
 		.exercise {
 			box-shadow: 0 48px 80px -32px rgba(0,0,0,0.3);
 			margin-bottom: 80px;
@@ -75,23 +67,28 @@
 		'/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
 		'/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
 	]
+	const preloadNodes = [
+		'/dnsaddr/node1.preload.ipfs.io/https'
+	]
 
-  <!-- start js-ipfs in page context -->
-	const ipfs = new window.Ipfs({
-		config: {
+	// start js-ipfs in page context
+	var ipfs = new window.Ipfs({
+	config: {
 			Bootstrap: boostrapNodes,
 			Addresses: { Swarm: [websocketStar] }
-		}
+		},
+		preload: { enabled: true, addresses: preloadNodes }
 	})
 
-	<!-- OR use js-ipfs-http-client and connect to remote API -->
+	// OR use js-ipfs-http-client and connect to remote API
 	// const ipfs = window.IpfsHttpClient('localhost', '5001')
 
-const ipfsId = document.querySelector('#ipfsId')
+	const ipfsId = document.querySelector('#ipfsId')
 
-ipfs.on('ready', () => {
-	ipfs.id().then((data) => ipfsId.textContent = JSON.stringify(data,null,2))
-})
+	ipfs.on('ready', () => {
+		ipfs.id().then((data) => ipfsId.textContent = JSON.stringify(data,null,2))
+	})
+
 </script>
 		</div>
 
@@ -111,9 +108,11 @@ ipfs.on('ready', () => {
 					event.preventDefault()
 					try {
 						const file = event.target.files[0]
-						const response = await ipfs.add(file, { progress: (prog) => console.log(`received: ${prog}`) })
+						const response = await ipfs.add(file)
 						console.log('ipfs.add response', response)
+
 					  const cid = response[0].hash
+
 						const addCidOutput = document.querySelector('#addCidOutput')
 					  addCidOutput.href = `${httpGateway}/ipfs/${cid}`
 					  addCidOutput.textContent = cid
@@ -131,8 +130,9 @@ ipfs.on('ready', () => {
 				const getButton = document.querySelector('#getButton')
 				getButton.addEventListener('click', async event => {
 					try {
-						// Small images can be inlined using Data URLs (RFC 2397)
 						const data = await ipfs.cat(addCidOutput.textContent)
+
+						// Small images can be inlined using Data URLs (RFC 2397)
 						const img = data.toString('base64')
 						document.querySelector('#getImage').src = `data:image/*;base64,${img}`
 					} catch(err) {
@@ -159,10 +159,10 @@ ipfs.on('ready', () => {
 					try {
 						const textarea = document.querySelector('#editJson')
 						const json = window.IpfsHttpClient.Buffer.from(textarea.value)
-						const response = await ipfs.add(json, {
-							progress: (prog) => console.log(`received: ${prog}`)
-						})
+
+						const response = await ipfs.add(json)
 						const cid = response[0].hash
+
 						console.log('ipfs.add response', response)
 						const jsonCidLink = document.querySelector('#jsonCidLink')
 						const publishJson = document.querySelector('#publishJson')
@@ -170,7 +170,8 @@ ipfs.on('ready', () => {
 						jsonCidLink.textContent = cid
 						publishJson.disabled = false
 					} catch (err) {
-						console.error(err)
+						// we don't need to worry about error details in this demo,
+						// but try console.error(err) if curious
 					}
 				})
 			</script>
@@ -184,11 +185,14 @@ ipfs.on('ready', () => {
 					try {
 						const jsonIpnsLink = document.querySelector('#jsonIpnsLink')
 						jsonIpnsLink.textContent = 'Publishing...'
-						const {name, value} = await ipfs.name.publish(jsonCidLink.textContent)
+						const cidToPublish = jsonCidLink.textContent
+
+						const {name, value} = await ipfs.name.publish(cidToPublish)
+
 						jsonIpnsLink.href = `${httpGateway}/ipns/${name}`
 						jsonIpnsLink.textContent = `Published ${value} to /ipns/${name}`
 					} catch(err) {
-						console.log(err)
+						console.log(`Unable to read /ipns/${name}: ${err}`)
 					}
 				})
 			</script>
@@ -201,15 +205,6 @@ ipfs.on('ready', () => {
 
 <script type="module">
 	import { html, Component, render } from 'https://unpkg.com/htm@2.1.1/preact/standalone.mjs';
-
-	/*
-	TODO:
-	- show peers from course only:
-	- [ ] show only peers form the same networks
-	- [ ] (for course) show only peers from specific ipv4 network (match first octects of IP)
-	- [x] Add green frame/checkbox to nodes that exposed { name, avatar, about } over IPNS
-	- [ ] Show green nodes first
-	*/
 
 	async function jsonFromIPNS(id) {
 		try {
@@ -224,7 +219,7 @@ ipfs.on('ready', () => {
 			}
 		} catch (err) {
 			if (err.message && err.message.includes('record requested was not found')) return
-			console.error(err)
+			console.log(`Unable to read JSON from /ipns/${id}: ${err}`)
 		}
 		return {}
 	}
@@ -242,7 +237,7 @@ ipfs.on('ready', () => {
 		peers.push(await refreshSelf())
 		try {
 			const peerInfos = await ipfs.swarm.peers()
-			console.log('refreshPeers → ipfs.swarm.peers()', peerInfos)
+			// console.log('refreshPeers → ipfs.swarm.peers()', peerInfos)
 			for (let info of peerInfos) {
 				const id = info.peer.toJSON().id
 				const json = await jsonFromIPNS(id)
@@ -257,7 +252,7 @@ ipfs.on('ready', () => {
 			}
 			return peers
 		} catch (err) {
-			console.error(err)
+			console.log(`Problem while refreshing peers: ${err}`)
 			return peers
 		}
 	}
@@ -292,6 +287,7 @@ ipfs.on('ready', () => {
 						<p class="lh-copy measure center f6 black-70">${about || '(no about)'}</p>
 					</div>`
 			}
+
 			return html`
 				<section class="flex flex-wrap transition-all">
 				  ${peers.length ? '' : html`<p>Waiting for peer discovery..</p>`}
