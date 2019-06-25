@@ -1,0 +1,142 @@
+
+  @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400,700|IBM+Plex+Sans:400,700&display=swap');
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    line-height: 22px;
+    color: #fff;
+    background-color: #3B65AE;
+    background-size: 40%;
+    background-repeat: no-repeat;
+    background-image: url(./corner-identity.svg);
+    background-position: left bottom;
+    background-attachment: fixed;
+    padding-bottom: 150px;
+  }
+  code, pre {
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  pre, input {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 4px;
+    background-color: #fff;
+    border: 1px dotted #000;
+    border-radius: 5px;
+  }
+  a {
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid #FCC228;
+  }
+  header {
+    color: #FCC228;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 24px;
+  }
+  #references {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+  #exercises {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: space-evenly;
+    margin: 0;
+    padding: 0;
+  }
+  .exercise {
+    max-width: 50em;
+    line-height: 14px;
+    font-size: 11px;
+    margin-bottom: 80px;
+    padding: 1em;
+    border: 3px solid #FCC228;
+    border-radius: 5px;
+    background-color: #FFF4E6;
+    color: rgba(0,0,0,0.8);
+  }
+  #addCidOutput {
+    min-width: 30rem;
+  }
+  #imageFromGateway,
+  #imageFromCat {
+    min-height: 1em;
+    min-width: 1em;
+    max-width: 10rem;
+    max-height: 10rem;
+  }
+  #peerInfo  input {
+    min-width: 30rem;
+  }
+  /* peer board */
+  #peerBoard {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: left;
+    margin: 0;
+    padding: 0;
+  }
+  @media (min-width: 1900px) {
+    header, #peerBoard, #references {
+      margin: 0 70px 0 70px;
+    }
+  }
+  .peerCard {
+    box-sizing: border-box;
+    cursor: help;
+    width: 245px;
+    height: 300px;
+    background-color: #fff;
+    margin: 12px;
+    border-radius: 5px;
+  }
+  .peerWithIpnsManifest {
+    border: 3px solid #FCC228;
+  }
+  .peerSelf { /* TODO */
+    background-color: #000;
+  }
+  .peerAvatar {
+    height: 200px;
+    background-color: #FFF4E6 !important;
+    background-size: cover;
+  }
+  .peerAvatar:not(.peerWithIpnsManifest) {
+    border-radius: 5px 5px 0 0;
+  }
+  .peerDetails {
+    border-left: 2px solid #7BB6F7;
+    margin: 12px;
+    padding-left: 10px;
+    color: rgba(0,0,0,0.8);
+    overflow: hidden;
+    max-height: 75px;
+  }
+  .peerWithIpnsManifest .peerDetails {
+    border-left: 2px solid #E416BB;
+  }
+  .peerDetails h1 {
+    margin: 0 0 8px 0;
+    padding: 0;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .peerDetails p {
+    margin: 0;
+    display: inline-block;
+    font-size: 12px;
+    line-height: 16px;
+    white-space: wrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 45px;
+  }

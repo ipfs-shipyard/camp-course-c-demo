@@ -6,51 +6,31 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<!-- TODO: tachyons are good for prototyping, be can move final styles to external file when all is ready  -->
-	<link href="https://unpkg.com/tachyons@4.11.1/css/tachyons.min.css" rel="stylesheet">
-	<link href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" rel="stylesheet">
+	<!--link href="https://unpkg.com/tachyons@4.11.1/css/tachyons.min.css" rel="stylesheet">
+	<link href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" rel="stylesheet"-->
 	<title>Course C Exercise</title>
-	<style>
-		.exercise {
-			box-shadow: 0 48px 80px -32px rgba(0,0,0,0.3);
-			margin-bottom: 80px;
-			padding: 2em;
-			border: 3px solid #9ad4db;
-			border-radius: .5rem;
-		}
-		#addCidOutput {
-			min-width: 30rem;
-		}
-		#imageFromGateway,
-		#imageFromCat {
-			min-height: 1em;
-			min-width: 1em;
-			max-width: 10rem;
-			max-height: 10rem;
-		}
-		#peerInfo  input {
-			min-width: 30rem;
-		}
-	</style>
+	<link href="./assets/style.css" rel="stylesheet" />
 </head>
 
-<body class="sans-serif">
-	<header class="pv3 ph2 ph3-l bg-navy cf">
-		<img src="https://ipfs.io/images/ipfs-logo.svg" class="dib fr v-mid" style="height:50px">
-		<h1 class='aqua fw2 montserrat dib ma0 pv2 ph1 v-mid f3 lh-copy'> IPFS Camp 2019: Course C Exercise <strong>(DRAFT)</strong></h1>
+<body>
+	<header>
+		<h1> IPFS Camp 2019: Course C Exercise <strong>(DRAFT)</strong></h1>
 	</header>
 
-	<div class="ph3 mw9">
+	<div>
 
-	<div class="flex">
-	  <div class="w-50">
+	<div id="references">
+	  <div>
 			<h3>Exercises</h3>
-			<ol>
-				<li><a href="#exercise-1">Talking to API from JS</a></li>
-				<li><a href="#exercise-2">Publishing Immutable Data</a></li>
-				<li><a href="#exercise-3">Updating Mutable Pointers</a></li>
-			</ol>
+			<ul>
+				<li><a href="/exercise-1.html">Exercise 1</a></li>
+				<li><a href="/exercise-2.html">Exercise 2</a></li>
+				<li><a href="/exercise-3.html">Exercise 3</a></li>
+				<li><a href="/exercise-4.html">Exercise 4</a></li>
+				<li><a href="/exercise-5.html">Exercise 5</a></li>
+			</ul>
 		</div>
-		<div class="w-50">
+		<div>
 			<h3>References</h3>
 			<ul>
 				<li><a href="https://github.com/jimpick/course-c-static">GitHub</a> / <a href="https://codesandbox.io/s/github/jimpick/course-c-static">Codesandbox</a></li>
@@ -60,34 +40,39 @@
 		</div>
 	</div>
 
+<div id="exercises">
+
 		<div id="exercise-1" class="exercise">
 			<h2>Exercise #1: Talking to API from JS</h2>
-			<h3>1. Create API instance (local or remote)</h3>
-			<h3>2. Confirm it works by printing <code>ipfs id</code> below:</h3>
-			<div class="monospace ba pa3 b--black-20 bg-snow-muted w-100 truncate">
-				<pre id="ipfsId">(result of "ipfs id" will appear here)</pre>
-			</div>
+			<h3>1. Initialize API instance under "<code>ipfs</code>" variable</h3>
+			<h3>2. Execute "<code>ipfs.id()</code>" to see what is on the other end</h3>
+			<h3>3. If it works, you will see returned output below:</h3>
+			<p><pre id="ipfsId">(result of "ipfs id" will appear here)</pre></p>
 
 <script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
 <script src="https://unpkg.com/ipfs@0.36.1/dist/index.min.js"></script>
 <script>
 	const httpGateway = 'https://ipfs.io'
 	const websocketStar = '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
+	// const websocketStar = '/dns4/rendezvous.jimpick.com/tcp/9091/wss/p2p-websocket-star'
 	const boostrapNodes = [
 		'/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
 		'/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
 	]
-	const preloadNodes = [
-		'/dnsaddr/node1.preload.ipfs.io/https'
+	const delegateNodes = [
+		'/dns4/node1.preload.ipfs.io/tcp/443/https'
 	]
 
 	// start js-ipfs in page context
 	var ipfs = new window.Ipfs({
 	config: {
 			Bootstrap: boostrapNodes,
-			Addresses: { Swarm: [websocketStar] }
+			Addresses: { Swarm: [websocketStar] },
+			/* TODO:
+			Delegates: [delegateNodes]
+			*/
 		},
-		preload: { enabled: true, addresses: preloadNodes }
+		preload: { enabled: true, addresses: delegateNodes }
 	})
 
 	// OR use js-ipfs-http-client and connect to remote API
@@ -156,13 +141,13 @@
 
 			<h3>3. Edit below and add to IPFS</h3>
 			<form id="peerInfo">
-				<p>Name: <input id="peerName" /></p>
-				<p>Avatar CID: <input id="peerAvatarCid" /></p>
-				<p>About: <input id="peerAbout" /></p>
+				<p>Name:<br /><input id="peerName" /></p>
+				<p>Avatar CID:<br /><input id="peerAvatarCid" /></p>
+				<p>About:<br /><input id="peerAbout" /></p>
 			<form id="peerInfo">
-			<pre id="jsonPreview" class="monospace mb3 pa2 ba b--black-20 bg-snow-muted w-100 truncate" >JSON preview will be shown here.</pre><br />
-			<button id="addJson" type="button">Add to IPFS</button><br />
-			Returned CID: <input id='jsonCid' readonly />
+			<p><pre id="jsonPreview" class="mb3 pa2 ba b--black-20 bg-snow-muted w-100 truncate" >JSON preview will be shown here.</pre></p>
+			<p><button id="addJson" type="button">Add to IPFS</button></p>
+			<p>Returned CID:<br /><input id='jsonCid' readonly /></p>
 			<script>
 				const addJsonButton = document.querySelector('#addJson')
 				addJsonButton.addEventListener('click', async event => {
@@ -215,7 +200,8 @@
 			<h3>5. Check if update got picked up by the Peer Board</h3>
 		</div>
 
-		<h2>Peer Dashboard</h2>
+	</div>
+
 		<div id="peerBoard"></div>
 
 <script type="module">
@@ -251,7 +237,7 @@
 
 	async function refreshPeers() {
 		const peers = []
-		if (ipfs.isOnline && !ipfs.isOnline()) return peers
+		if (!ipfs || (ipfs.isOnline && !ipfs.isOnline())) return peers
 		peers.push(await refreshSelf())
 		try {
 			const peerInfos = await ipfs.swarm.peers()
@@ -294,20 +280,23 @@
 			const peerCard = ({id, name, avatar, addr, about, ipns}) => {
 				const avatarUrl = avatar
 					? `data:image/*;base64,${avatar.toString('base64')}`
-					: `https://robohash.org/${id}.png?set=set4`
-				const avatarStyle = `background-image: url('${avatarUrl}');background-size: cover;`
-				const cardStyle = `grow mw5 center br3 pa3 mv3 ba ${ipns ? 'b--green bg-white bw2 shadow-5' : 'b--black-20 bg-snow-muted'} hover-bg-white`
-				return html`<div class="${cardStyle}"  title="${addr || id}" style="cursor: help; min-width: 270px">
-							<div style="${avatarStyle}" class="grow br-100 h4 w4 shadow-5"></div>
-							<h1 class="f3 mb2 truncate">${name || id}</h1>
-							<hr class="dbi mw4 bb bw1 b--black-10" />
-							<p class="lh-copy measure center f6 black-70 truncate">${about || '(no about)'}</p>
+					: `https://proxy.duckduckgo.com/iu/?u=https://robohash.org/${id}.png?set=set4`
+				const avatarStyle = avatar
+					? `background-image: url('${avatarUrl}');`
+					: `background: no-repeat center/80% url('${avatarUrl}');`
+				const cardStyle = `peerCard ${ipns ? 'peerWithIpnsManifest' : ''}`
+				return html`<div class="${cardStyle}"  title="${addr || id}">
+							<div style="${avatarStyle}" class="peerAvatar"></div>
+							<div class="peerDetails">
+								<h1 title="${name || id}">${name || id}</h1>
+								<p title="${about || '(no about)'}">${about || 'No info yet'}</p>
+							</div>
 						</div>`
 			}
-			if (!ipfs) return html`<p>Initialize <code>ipfs</code> first :-)</p>`
+			if (!ipfs) return html`<h2>Initialize <code>ipfs</code> first :-)</h2>`
 			return html`
-				<section class="flex flex-wrap transition-all">
-				  ${peers.length ? '' : html`<p>Waiting for peer discovery..</p>`}
+				<section id="peerBoard">
+				  ${peers.length ? '' : html`<h2>Waiting for peer discovery..</h2>`}
 					${peers.map(peerCard)}
 				</section>`
 		}
