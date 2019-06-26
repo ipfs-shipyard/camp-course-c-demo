@@ -50,11 +50,11 @@
 			<p><pre id="ipfsId">(result of "ipfs id" will appear here)</pre></p>
 
 <script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
-<script src="https://unpkg.com/ipfs@0.36.1/dist/index.min.js"></script>
+<script src="/assets/index.min.js"></script>
 <script>
 	const httpGateway = 'https://ipfs.io'
-	const websocketStar = '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
-	// const websocketStar = '/dns4/rendezvous.jimpick.com/tcp/9091/wss/p2p-websocket-star'
+	//const websocketStar = '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
+	const websocketStar = '/dns4/rendezvous.jimpick.com/tcp/9091/wss/p2p-websocket-star'
 	const boostrapNodes = [
 		'/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
 		'/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
@@ -72,11 +72,14 @@
 			Delegates: [delegateNodes]
 			*/
 		},
-		preload: { enabled: true, addresses: delegateNodes }
+		preload: { enabled: true, addresses: delegateNodes },
+		EXPERIMENTAL: {
+			ipnsDNS: true,
+		}
 	})
 
 	// OR use js-ipfs-http-client and connect to remote API
-	// const ipfs = window.IpfsHttpClient('localhost', '5001')
+	// const ipfs = window.IpfsHttpClient('127.0.0.1', '5002')
 
 	const ipfsId = document.querySelector('#ipfsId')
 
@@ -207,57 +210,46 @@
 <script type="module">
 	import { html, Component, render } from 'https://unpkg.com/htm@2.1.1/preact/standalone.mjs';
 
-	async function jsonFromIPNS(id) {
+	async function jsonFromIPNS(id, addr) {
 		try {
 			// ideally: const result = await ipfs.cat(`/ipns/${id}`)
 			const result = await ipfs.name.resolve(`/ipns/${id}`)
-			if ('path' in result) {
-				const data = await ipfs.cat(result.path)
-				const json = JSON.parse(data.toString())
-				json.avatar = await ipfs.cat(json.avatar)
-				json.ipns = true
-				return json
+			if (result) {
+				const json = await ipfs.cat(result)
+				const data = JSON.parse(json.toString())
+				return {
+					id,
+					addr,
+					name: data.name,
+					avatar: data.avatar ? await ipfs.cat(data.avatar): null,
+					about: data.about,
+					ipns: true
+				}
 			}
 		} catch (err) {
-			if (err.message) {
-				if (err.message.includes('record requested was not found')) return
-				if (err.message.includes('this dag node is a directory')) return
+			return {
+				id,
+				addr
 			}
-			console.log(`Unable to read JSON from /ipns/${id}: ${err}`)
 		}
-		return {}
 	}
 
 	async function refreshSelf() {
 		const { id, addresses } = await ipfs.id()
 		const addr = addresses.find(addr => addr.includes(websocketStar) || `(/p2p-circuit/ipfs/${id})`)
-		const json = await jsonFromIPNS(id)
-		return Object.assign({ id, addr }, json)
+		const json = await jsonFromIPNS(id, addr)
+		return json
 	}
 
 	async function refreshPeers() {
-		const peers = []
-		if (!ipfs || (ipfs.isOnline && !ipfs.isOnline())) return peers
-		peers.push(await refreshSelf())
+		if (!ipfs || (ipfs.isOnline && !ipfs.isOnline())) return []
 		try {
 			const peerInfos = await ipfs.swarm.peers()
-			// console.log('refreshPeers → ipfs.swarm.peers()', peerInfos)
-			for (let info of peerInfos) {
-				const id = info.peer.toJSON().id
-				const json = await jsonFromIPNS(id)
-				const manifest = Object.assign({
-					id,
-					addr: info.addr.toString(),
-					name: undefined,
-					avatar: undefined,
-					about: undefined
-				}, json)
-				peers.push(manifest)
-			}
-			return peers
+			const peers = await Promise.all(peerInfos.map(info => jsonFromIPNS(info.peer.toJSON().id, info.addr.toString())))
+			return [await refreshSelf(), ...peers]
 		} catch (err) {
 			console.log(`Problem while refreshing peers: ${err}`)
-			return peers
+			return []
 		}
 	}
 
