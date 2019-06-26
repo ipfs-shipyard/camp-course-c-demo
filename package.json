@@ -1,7 +1,7 @@
 {
-  "name": "course-c-static",
+  "name": "camp-course-c-demo",
   "version": "1.0.0",
-  "description": "This is a static template with no bundling",
+  "description": "IPFS Camp 2019 Course C Materials",
   "main": "index.html",
   "scripts": {
     "start": "npx live-server --port=3000",
@@ -10,13 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/codesandbox-app/static-template.git"
+    "url": "git+https://github.com/ipfs-shipyard/camp-course-c-demo.git"
   },
   "keywords": [],
-  "author": "Ives van Hoorne",
+  "author": "@lidel, @jimpick, @hugomrdias",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/codesandbox-app/static-template/issues"
-  },
-  "homepage": "https://github.com/codesandbox-app/static-template#readme"
+  "homepage": "https://github.com/ipfs-shipyard/camp-course-c-demo"
 }
