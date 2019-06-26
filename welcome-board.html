@@ -61,11 +61,12 @@
 
       <div class="ph3">
         <div class="flex">
-          <div class="center f-headline">
-            course-c.camp.ipfs.io
-          </div>
+          <div class="center f-headline" id="host"></div>
         </div>
       </div>
+      <script>
+        document.getElementById("host").textContent = location.host;
+      </script>
 
       <div id="peerBoard"></div>
 
