@@ -5,7 +5,6 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<!-- TODO: tachyons are good for prototyping, be can move final styles to external file when all is ready  -->
 	<link href="https://unpkg.com/tachyons@4.11.1/css/tachyons.min.css" rel="stylesheet">
 	<link href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" rel="stylesheet">
 	<title>Course C Exercise</title>
@@ -42,7 +41,6 @@
 		'/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
 	]
 
-  <!-- start js-ipfs in page context -->
 	const ipfs = new window.Ipfs({
 		config: {
 			Bootstrap: boostrapNodes,
@@ -50,7 +48,6 @@
 		}
 	})
 
-	<!-- OR use js-ipfs-http-client and connect to remote API -->
 	// const ipfs = window.IpfsHttpClient('localhost', '5001')
 
 const ipfsId = document.querySelector('#ipfsId')
@@ -100,9 +97,9 @@ ipfs.on('ready', () => {
 				getButton.addEventListener('click', async event => {
 					try {
 
-						const data = // TODO: ipfs.cat
+						const data = // TODO Step 1: add data to IPFS via ipfs.cat() (API docs: https://github.com/ipfs/js-ipfs#files)
 
-						// Small images can be inlined using Data URLs (RFC 2397)
+						// small images can be inlined using Data URLs (RFC 2397)
 						const img = data.toString('base64')
 						document.querySelector('#getImage').src = `data:image/*;base64,${img}`
 					} catch(err) {

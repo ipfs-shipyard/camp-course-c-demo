@@ -5,7 +5,6 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<!-- TODO: tachyons are good for prototyping, be can move final styles to external file when all is ready  -->
 	<link href="https://unpkg.com/tachyons@4.11.1/css/tachyons.min.css" rel="stylesheet">
 	<link href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" rel="stylesheet">
 	<title>Course C Exercise</title>
@@ -36,16 +35,17 @@
 				<pre id="ipfsId">(result of "ipfs id" will appear here)</pre>
 			</div>
 
-<script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
+<!-- TODO Step 1: include <script> with browser bundle of ipfs-http-client:
+     https://github.com/ipfs/js-ipfs-http-client#in-a-web-browser -->
 <script>
 const httpGateway = 'https://ipfs.io'
 const websocketStar = '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
 
-const ipfs = // Step 1: initialize HTTP Client
+const ipfs = // TODO Step 2: initialize HTTP Client via window.IpfsHttpClient
 
 const ipfsId = document.querySelector('#ipfsId')
 
-// Step 2: set ipfsId.textContent to value from ipfs.id()
+// TODO Step 3: Set ipfsId.textContent to the value read from ipfs.id()
 
 </script>
 		</div>

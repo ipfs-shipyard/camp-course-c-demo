@@ -5,19 +5,10 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<!-- TODO: tachyons are good for prototyping, be can move final styles to external file when all is ready  -->
 	<link href="https://unpkg.com/tachyons@4.11.1/css/tachyons.min.css" rel="stylesheet">
 	<link href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" rel="stylesheet">
 	<title>Course C Exercise</title>
 	<style>
-	  /* TODO: make it work with codesandbox and without page reload
-		div.exercise:not(:target) {
-			display: none;
-		}
-		div.exercise:target {
-			display: block;
-		}
-		*/
 		.exercise {
 			box-shadow: 0 48px 80px -32px rgba(0,0,0,0.3);
 			margin-bottom: 80px;
@@ -76,16 +67,12 @@
 		'/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
 	]
 
-  <!-- start js-ipfs in page context -->
 	const ipfs = new window.Ipfs({
 		config: {
 			Bootstrap: boostrapNodes,
 			Addresses: { Swarm: [websocketStar] }
 		}
 	})
-
-	<!-- OR use js-ipfs-http-client and connect to remote API -->
-	// const ipfs = window.IpfsHttpClient('localhost', '5001')
 
 const ipfsId = document.querySelector('#ipfsId')
 
@@ -201,15 +188,6 @@ ipfs.on('ready', () => {
 
 <script type="module">
 	import { html, Component, render } from 'https://unpkg.com/htm@2.1.1/preact/standalone.mjs';
-
-	/*
-	TODO:
-	- show peers from course only:
-	- [ ] show only peers form the same networks
-	- [ ] (for course) show only peers from specific ipv4 network (match first octects of IP)
-	- [x] Add green frame/checkbox to nodes that exposed { name, avatar, about } over IPNS
-	- [ ] Show green nodes first
-	*/
 
 	async function jsonFromIPNS(id) {
 		try {

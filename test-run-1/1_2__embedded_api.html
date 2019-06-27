@@ -5,7 +5,6 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<!-- TODO: tachyons are good for prototyping, be can move final styles to external file when all is ready  -->
 	<link href="https://unpkg.com/tachyons@4.11.1/css/tachyons.min.css" rel="stylesheet">
 	<link href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" rel="stylesheet">
 	<title>Course C Exercise</title>
@@ -38,10 +37,11 @@
 
 
 
-<!-- Step 0: import js-ipfs bundle as in https://github.com/ipfs/js-ipfs#use-in-the-browser -->
+<!-- TODO Step 1: include <script> with browser bundle of js-ipfs bundle
+     https://github.com/ipfs/js-ipfs#use-in-the-browser -->
 
 <script>
-	/*
+
 	const httpGateway = 'https://ipfs.io'
 	const websocketStar = '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
 	const boostrapNodes = [
@@ -51,13 +51,15 @@
 		'/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
 		'/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
 	]
-	*/
-const ipfs = // Step 1: initialize js-ipfs, see addresses in ipfs.id
-// Step 2: initialize js-ipfs with  websocketStar and  boostrapNodes above
+
+const ipfs = // TODO Step 2: initialize js-ipfs via window.Ipfs()
+
+// TODO Step 3: initialize js-ipfs with  websocketStar and  boostrapNodes above
+
 const ipfsId = document.querySelector('#ipfsId')
 
 ipfs.on('ready', () => {
-	// Step 3: Copy your call to ipfs.id from previous exercise
+	// TODO Step 4: Copy code related to ipfs.id() from the previous exercise
 })
 
 </script>
