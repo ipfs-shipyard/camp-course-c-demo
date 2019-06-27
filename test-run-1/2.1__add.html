@@ -5,7 +5,6 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<!-- TODO: tachyons are good for prototyping, be can move final styles to external file when all is ready  -->
 	<link href="https://unpkg.com/tachyons@4.11.1/css/tachyons.min.css" rel="stylesheet">
 	<link href="https://unpkg.com/ipfs-css@0.12.0/ipfs.css" rel="stylesheet">
 	<title>Course C Exercise</title>
@@ -42,16 +41,12 @@
 		'/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
 	]
 
-  <!-- start js-ipfs in page context -->
 	const ipfs = new window.Ipfs({
 		config: {
 			Bootstrap: boostrapNodes,
 			Addresses: { Swarm: [websocketStar] }
 		}
 	})
-
-	<!-- OR use js-ipfs-http-client and connect to remote API -->
-	// const ipfs = window.IpfsHttpClient('localhost', '5001')
 
 const ipfsId = document.querySelector('#ipfsId')
 
@@ -78,9 +73,8 @@ ipfs.on('ready', () => {
 					try {
 
 						const file = event.target.files[0]
-						const response = // TODO: ipfs.add
-					  const cid = // TODO: response[0].hash
-
+						const response = // TODO Step 1: add data to IPFS via ipfs.add() and get response  (API docs: https://github.com/ipfs/js-ipfs#files)
+					  const cid = // TODO Step 2: extract CID from response (Example: https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#add)
 
 						const addCidOutput = document.querySelector('#addCidOutput')
 					  addCidOutput.textContent = `/ipfs/${cid}`
