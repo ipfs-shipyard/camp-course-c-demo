@@ -14,12 +14,9 @@
 
 <body>
 	<header>
-		<h1> IPFS Camp 2019: Course C Exercise <strong>(DRAFT)</strong></h1>
+		<h1> IPFS Camp 2019: Course C Exercise </h1>
 	</header>
-
-	<div>
-
-	<div id="references">
+	<!-- <div id="references">
 	  <div>
 			<h3>Exercises</h3>
 			<ul>
@@ -38,65 +35,68 @@
 				<li>JS API: <a href="https://github.com/ipfs/interface-js-ipfs-core/tree/master/SPEC">interface-js-ipfs-core/SPEC</a></li>
 			</ul>
 		</div>
-	</div>
-
-<div id="exercises">
-
+	</div> -->
+	<div id="exercises" class="grid">
 		<div id="exercise-1" class="exercise">
 			<h2>Exercise #1: Talking to API from JS</h2>
-			<h3>1. Initialize API instance under "<code>ipfs</code>" variable</h3>
-			<h3>2. Execute "<code>ipfs.id()</code>" to see what is on the other end</h3>
-			<h3>3. If it works, you will see returned output below:</h3>
-			<p><pre id="ipfsId">(result of "ipfs id" will appear here)</pre></p>
-
-<script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
-<script src="/assets/index.min.js"></script>
-<script>
-	const httpGateway = 'https://ipfs.io'
-	//const websocketStar = '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
-	const websocketStar = '/dns4/rendezvous.jimpick.com/tcp/9091/wss/p2p-websocket-star'
-	const boostrapNodes = [
-		'/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
-		'/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
-	]
-	const delegateNodes = [
-		'/dns4/node1.preload.ipfs.io/tcp/443/https'
-	]
-
-	// start js-ipfs in page context
-	var ipfs = new window.Ipfs({
-	config: {
-			Bootstrap: boostrapNodes,
-			Addresses: { Swarm: [websocketStar] },
-			/* TODO:
-			Delegates: [delegateNodes]
-			*/
-		},
-		preload: { enabled: true, addresses: delegateNodes },
-		EXPERIMENTAL: {
-			ipnsDNS: true,
-		}
-	})
-
-	// OR use js-ipfs-http-client and connect to remote API
-	// const ipfs = window.IpfsHttpClient('127.0.0.1', '5002')
-
-	const ipfsId = document.querySelector('#ipfsId')
-
-	ipfs.on('ready', () => {
-		ipfs.id().then((data) => ipfsId.textContent = JSON.stringify(data,null,2))
-	})
-
-</script>
+			<p>1. Initialize API instance under <code>ipfs</code> variable</p>
+			<p>2. Execute <code>ipfs.id()</code> to see what is on the other end</p>
+			<p>3. If it works, you will see returned output below:</p>
+			<p>
+				<pre id="ipfsId">(result of "ipfs id" will appear here)</pre>
+			</p>
 		</div>
+		<script src="https://unpkg.com/ipfs-http-client@32.0.1/dist/index.min.js"></script>
+		<script src="/assets/index.min.js"></script>
+		<script>
+			const httpGateway = 'https://ipfs.io'
+			//const websocketStar = '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
+			const websocketStar = '/dns4/rendezvous.jimpick.com/tcp/9091/wss/p2p-websocket-star'
+			const boostrapNodes = [
+				'/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
+				'/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
+			]
+			const delegateNodes = [
+				'/dns4/node1.preload.ipfs.io/tcp/443/https'
+			]
 
+			// start js-ipfs in page context
+			var ipfs = new window.Ipfs({
+				config: {
+					Bootstrap: boostrapNodes,
+					Addresses: { Swarm: [websocketStar] },
+					/* TODO:
+					Delegates: [delegateNodes]
+					*/
+				},
+				preload: { enabled: true, addresses: delegateNodes },
+				EXPERIMENTAL: {
+					ipnsDNS: true,
+				}
+			})
+
+			// OR use js-ipfs-http-client and connect to remote API
+			// const ipfs = window.IpfsHttpClient('127.0.0.1', '5002')
+
+			const ipfsId = document.querySelector('#ipfsId')
+
+			ipfs.on('ready', () => {
+				ipfs.id().then((data) => ipfsId.textContent = JSON.stringify(data, null, 2))
+			})
+
+		</script>
+		<!-- END EXERCISE 1 -->
 		<div id="exercise-2" class="exercise">
-
 			<h2>Exercise #2: Publishing Immutable Data (<code class="navy">/ipfs/</code>)</h2>
-
-			<h3>1. Add avatar image to IPFS</h3>
-			<p><input id="addFileInput" type='file' class="pointer" /></p>
-			<p>Returned CID: <input id="addCidOutput" readonly /></p>
+			<h4>1. Add avatar image to IPFS</h4>
+			<div>
+				<label>Select a image:</label><br/>
+				<input id="addFileInput" type='file' class="pointer" />
+			</div>
+			<div>
+				<label>CID:</label><br/>
+				<input id="addCidOutput" readonly />
+			</div>
 			<script>
 				const addFileInput = document.querySelector('#addFileInput')
 				addFileInput.addEventListener('change', async event => {
@@ -106,18 +106,20 @@
 						const file = event.target.files[0]
 						const response = await ipfs.add(file)
 						console.log('ipfs.add response', response)
-					  const cid = response[0].hash
+						const cid = response[0].hash
 						document.querySelector('#addCidOutput').value = cid
-					} catch(err) {
-					  console.error(err)
+					} catch (err) {
+						console.error(err)
 					}
 				})
 			</script>
-
-			<h3>2. Load avatar from IPFS</h3>
-			<button id='getButton' type="button">Get the content for CID above</button><br />
-			<p>Inlined data: <img id='imageFromCat' /></p>
-			<p>Read from HTTP Gateway: <img id='imageFromGateway' /></p>
+			<br/>
+			<h4>2. Load avatar from IPFS</h4>
+			<button id='getButton' type="button">Click to load the avatar</button><br />
+			<div>Inlined data: </div>
+			<img id='imageFromCat' />
+			<div>Read from HTTP Gateway:</div>
+			<img id='imageFromGateway' />
 			<script>
 				const getButton = document.querySelector('#getButton')
 				getButton.addEventListener('click', async event => {
@@ -132,171 +134,167 @@
 						const img = data.toString('base64')
 						const imgViaDataURL = document.querySelector('#imageFromCat')
 						imgViaDataURL.src = `data:image/*;base64,${img}`
-					} catch(err) {
+					} catch (err) {
 						console.log(err)
 					}
 				})
 			</script>
 		</div>
-
 		<div id="exercise-3" class="exercise">
 			<h2>Exercise #3: Updating Mutable Pointers (<code class="navy">/ipns/</code>)</h2>
-
 			<h3>3. Edit below and add to IPFS</h3>
 			<form id="peerInfo">
 				<p>Name:<br /><input id="peerName" /></p>
 				<p>Avatar CID:<br /><input id="peerAvatarCid" /></p>
 				<p>About:<br /><input id="peerAbout" /></p>
-			<form id="peerInfo">
-			<p><pre id="jsonPreview" class="mb3 pa2 ba b--black-20 bg-snow-muted w-100 truncate" >JSON preview will be shown here.</pre></p>
-			<p><button id="addJson" type="button">Add to IPFS</button></p>
-			<p>Returned CID:<br /><input id='jsonCid' readonly /></p>
-			<script>
-				const addJsonButton = document.querySelector('#addJson')
-				addJsonButton.addEventListener('click', async event => {
-					try {
-						const peerName = document.querySelector('#peerName')
-						const peerAvatarCid = document.querySelector('#peerAvatarCid')
-						const peerAbout = document.querySelector('#peerAbout')
-						const jsonPreview = document.querySelector('#jsonPreview')
-						jsonPreview.innerText = `{"name":"${peerName.value}", "avatar":"${peerAvatarCid.value}", "about":"${peerAbout.value}"}`
-						const json = window.IpfsHttpClient.Buffer.from(jsonPreview.innerText)
+				<form id="peerInfo">
+					<p>
+						<pre id="jsonPreview"
+							class="mb3 pa2 ba b--black-20 bg-snow-muted w-100 truncate">JSON preview will be shown here.</pre>
+					</p>
+					<p><button id="addJson" type="button">Add to IPFS</button></p>
+					<p>Returned CID:<br /><input id='jsonCid' readonly /></p>
+					<script>
+						const addJsonButton = document.querySelector('#addJson')
+						addJsonButton.addEventListener('click', async event => {
+							try {
+								const peerName = document.querySelector('#peerName')
+								const peerAvatarCid = document.querySelector('#peerAvatarCid')
+								const peerAbout = document.querySelector('#peerAbout')
+								const jsonPreview = document.querySelector('#jsonPreview')
+								jsonPreview.innerText = `{"name":"${peerName.value}", "avatar":"${peerAvatarCid.value}", "about":"${peerAbout.value}"}`
+								const json = window.IpfsHttpClient.Buffer.from(jsonPreview.innerText)
 
-						const response = await ipfs.add(json)
-						const cid = response[0].hash
+								const response = await ipfs.add(json)
+								const cid = response[0].hash
 
-						console.log('ipfs.add response', response)
-						const jsonCid = document.querySelector('#jsonCid')
+								console.log('ipfs.add response', response)
+								const jsonCid = document.querySelector('#jsonCid')
+								const publishJson = document.querySelector('#publishJson')
+								jsonCid.value = cid
+								publishJson.disabled = false
+							} catch (err) {
+								// we don't need to worry about error details in this demo,
+								// but try console.error(err) if curious
+							}
+						})
+						const updateJsonPreview = () => {
+							jsonPreview.innerText = `{"name":"${peerName.value}", "avatar":"${peerAvatarCid.value}", "about":"${peerAbout.value}"}`
+						}
+					</script>
+					<h3>4. Publish update <code class="navy">/ipns/{peerId}</code> to the above CID</h3>
+					<button id='publishJson' type="button" disabled>Publish to IPNS</button><br />
+					<div id='ipnsPublishResult'></div>
+					<script>
 						const publishJson = document.querySelector('#publishJson')
-						jsonCid.value = cid
-						publishJson.disabled = false
-					} catch (err) {
-						// we don't need to worry about error details in this demo,
-						// but try console.error(err) if curious
-					}
-				})
-				const updateJsonPreview = () => {
-					jsonPreview.innerText = `{"name":"${peerName.value}", "avatar":"${peerAvatarCid.value}", "about":"${peerAbout.value}"}`
-				}
-			</script>
+						publishJson.addEventListener('click', async event => {
+							try {
+								const ipnsPublishResult = document.querySelector('#ipnsPublishResult')
+								ipnsPublishResult.textContent = 'Publishing...'
+								const cidToPublish = jsonCid.value
 
-			<h3>4. Publish update <code class="navy">/ipns/{peerId}</code> to the above CID</h3>
-			<button id='publishJson' type="button" disabled>Publish to IPNS</button><br />
-			<div id='ipnsPublishResult'></div>
-			<script>
-				const publishJson = document.querySelector('#publishJson')
-				publishJson.addEventListener('click', async event => {
-					try {
-						const ipnsPublishResult = document.querySelector('#ipnsPublishResult')
-						ipnsPublishResult.textContent = 'Publishing...'
-						const cidToPublish = jsonCid.value
+								const { name, value } = await ipfs.name.publish(cidToPublish)
 
-						const {name, value} = await ipfs.name.publish(cidToPublish)
-
-						ipnsPublishResult.innerHTML = `<p>Published <strong>${value}</strong><br />under <strong>/ipns/${name}</strong></p>`
-					} catch(err) {
-						console.log(`Unable to read /ipns/${name}: ${err}`)
-					}
-				})
-			</script>
-
-			<h3>5. Check if update got picked up by the Peer Board</h3>
+								ipnsPublishResult.innerHTML = `<p>Published <strong>${value}</strong><br />under <strong>/ipns/${name}</strong></p>`
+							} catch (err) {
+								console.log(`Unable to read /ipns/${name}: ${err}`)
+							}
+						})
+					</script>
+					<h3>5. Check if update got picked up by the Peer Board</h3>
 		</div>
-
 	</div>
+	<div id="peerBoard-container"></div>
+	<script type="module">
+		import { html, Component, render } from 'https://unpkg.com/htm@2.1.1/preact/standalone.mjs';
 
-		<div id="peerBoard"></div>
-
-<script type="module">
-	import { html, Component, render } from 'https://unpkg.com/htm@2.1.1/preact/standalone.mjs';
-
-	async function jsonFromIPNS(id, addr) {
-		try {
-			// ideally: const result = await ipfs.cat(`/ipns/${id}`)
-			const result = await ipfs.name.resolve(`/ipns/${id}`)
-			if (result) {
-				const json = await ipfs.cat(result)
-				const data = JSON.parse(json.toString())
+		async function jsonFromIPNS(id, addr) {
+			try {
+				// ideally: const result = await ipfs.cat(`/ipns/${id}`)
+				const result = await ipfs.name.resolve(`/ipns/${id}`)
+				if (result) {
+					const json = await ipfs.cat(result)
+					const data = JSON.parse(json.toString())
+					return {
+						id,
+						addr,
+						name: data.name,
+						avatar: data.avatar ? await ipfs.cat(data.avatar) : null,
+						about: data.about,
+						ipns: true
+					}
+				}
+			} catch (err) {
 				return {
 					id,
-					addr,
-					name: data.name,
-					avatar: data.avatar ? await ipfs.cat(data.avatar): null,
-					about: data.about,
-					ipns: true
+					addr
 				}
 			}
-		} catch (err) {
-			return {
-				id,
-				addr
+		}
+
+		async function refreshSelf() {
+			const { id, addresses } = await ipfs.id()
+			const addr = addresses.find(addr => addr.includes(websocketStar) || `(/p2p-circuit/ipfs/${id})`)
+			const json = await jsonFromIPNS(id, addr)
+			return json
+		}
+
+		async function refreshPeers() {
+			if (!ipfs || (ipfs.isOnline && !ipfs.isOnline())) return []
+			try {
+				const peerInfos = await ipfs.swarm.peers()
+				const peers = await Promise.all(peerInfos.map(info => jsonFromIPNS(info.peer.toJSON().id, info.addr.toString())))
+				return [await refreshSelf(), ...peers]
+			} catch (err) {
+				console.log(`Problem while refreshing peers: ${err}`)
+				return []
 			}
 		}
-	}
 
-	async function refreshSelf() {
-		const { id, addresses } = await ipfs.id()
-		const addr = addresses.find(addr => addr.includes(websocketStar) || `(/p2p-circuit/ipfs/${id})`)
-		const json = await jsonFromIPNS(id, addr)
-		return json
-	}
+		class PeerDashboard extends Component {
 
-	async function refreshPeers() {
-		if (!ipfs || (ipfs.isOnline && !ipfs.isOnline())) return []
-		try {
-			const peerInfos = await ipfs.swarm.peers()
-			const peers = await Promise.all(peerInfos.map(info => jsonFromIPNS(info.peer.toJSON().id, info.addr.toString())))
-			return [await refreshSelf(), ...peers]
-		} catch (err) {
-			console.log(`Problem while refreshing peers: ${err}`)
-			return []
-		}
-	}
-
-	class PeerDashboard extends Component {
-
-		async componentDidMount() {
-			const refreshData = async () => {
-				const peers = await refreshPeers()
-				this.setState({ peers })
+			async componentDidMount() {
+				const refreshData = async () => {
+					const peers = await refreshPeers()
+					this.setState({ peers })
+				}
+				refreshData()
+				this.timer = setInterval(refreshData, 3000)
 			}
-			refreshData()
-			this.timer = setInterval(refreshData, 3000)
-		}
 
-		componentWillUnmount() {
-			clearInterval(this.timer)
-		}
+			componentWillUnmount() {
+				clearInterval(this.timer)
+			}
 
-		render({}, { peers = [] }) {
-			const peerCard = ({id, name, avatar, addr, about, ipns}) => {
-				const avatarUrl = avatar
-					? `data:image/*;base64,${avatar.toString('base64')}`
-					: `https://proxy.duckduckgo.com/iu/?u=https://robohash.org/${id}.png?set=set4`
-				const avatarStyle = avatar
-					? `background-image: url('${avatarUrl}');`
-					: `background: no-repeat center/80% url('${avatarUrl}');`
-				const cardStyle = `peerCard ${ipns ? 'peerWithIpnsManifest' : ''}`
-				return html`<div class="${cardStyle}"  title="${addr || id}">
+			render({ }, { peers = [] }) {
+				const peerCard = ({ id, name, avatar, addr, about, ipns }) => {
+					const avatarUrl = avatar
+						? `data:image/*;base64,${avatar.toString('base64')}`
+						: `https://proxy.duckduckgo.com/iu/?u=https://robohash.org/${id}.png?set=set4`
+					const avatarStyle = avatar
+						? `background-image: url('${avatarUrl}');`
+						: `background: no-repeat center/80% url('${avatarUrl}');`
+					const cardStyle = `col peerCard ${ipns ? 'peerWithIpnsManifest' : ''}`
+					return html`<div class="${cardStyle}"  title="${addr || id}">
 							<div style="${avatarStyle}" class="peerAvatar"></div>
 							<div class="peerDetails">
 								<h1 title="${name || id}">${name || id}</h1>
 								<p title="${about || '(no about)'}">${about || 'No info yet'}</p>
 							</div>
 						</div>`
-			}
-			if (!ipfs) return html`<h2>Initialize <code>ipfs</code> first :-)</h2>`
-			return html`
-				<section id="peerBoard">
+				}
+				if (!ipfs) return html`<h2>Initialize <code>ipfs</code> first :-)</h2>`
+				return html`
+				<section id="peerBoard" class="grid">
 				  ${peers.length ? '' : html`<h2>Waiting for peer discovery..</h2>`}
 					${peers.map(peerCard)}
 				</section>`
+			}
 		}
-	}
 
-	render(html`<${PeerDashboard} />`, document.getElementById('peerBoard'))
-</script>
-</div>
+		render(html`<${PeerDashboard} />`, document.getElementById('peerBoard-container'))
+	</script>
+	</div>
 </body>
 
 </html>
