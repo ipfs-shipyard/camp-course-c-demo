@@ -27,7 +27,7 @@
 
   async function refreshSelf() {
     const { id, addresses } = await ipfs.id()
-    const addr = addresses.find(addr => addr.includes(websocketStar) || `(/p2p-circuit/ipfs/${id})`)
+    const addr = addresses.find(addr => addr.includes(`/p2p-circuit/ipfs/${id}`) )
     const json = await jsonFromIPNS(id, addr)
     return json
   }

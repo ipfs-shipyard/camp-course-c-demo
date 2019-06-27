@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Course C Exercise</title>
+	<link href="../assets/style.css" rel="stylesheet" />
+</head>
+<body>
+	<header>
+		<h1><a href="../index.html">IPFS Camp 2019: Course C</a></h1>
+	</header>
+	
+	<div id="exercises" class="grid">
+		<div id="exercise-2" class="exercise">
+				<h2>Exercise #2: Publishing Immutable Data (<code class="navy">/ipfs/</code>)</h2>
+				<h4>1. Add avatar image to IPFS</h4>
+				<div>
+					<label>Select a image:</label><br/>
+					<input id="addFileInput" type='file' class="pointer" />
+				</div>
+				<div>
+					<label>CID:</label><br/>
+					<input id="addCidOutput" readonly />
+				</div>
+			</div>
+	</div>
+
+	<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
+    <script>
+		const DOM = {
+			addFile: document.querySelector('#addFileInput'),
+			cidOutput: document.querySelector('#addCidOutput')
+		}
+		const wsStart = '/dns4/rendezvous.jimpick.com/tcp/9091/wss/p2p-websocket-star'
+		const ipfs = new Ipfs({config: {Addresses: {Swarm: [wsStart]}}})
+		
+		ipfs.on('ready', () => {
+			
+			DOM.addFile.addEventListener('change', async event => {
+				try {
+					const file = event.target.files[0]
+					// TODO: add the file from the input to IPFS
+					// https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#ipfsadddata-options-callback
+					
+
+					console.log('ipfs.add result', result)
+
+					DOM.cidOutput.value = ''
+				} catch (err) {
+					console.error(err)
+				}
+			})
+
+        })
+
+	</script>
+</body>
+</html>

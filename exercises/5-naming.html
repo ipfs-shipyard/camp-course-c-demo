@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Course C Exercise</title>
+	<link href="../assets/style.css" rel="stylesheet" />
+</head>
+
+<body>
+	<header>
+		<h1><a href="../index.html">IPFS Camp 2019: Course C</a></h1>
+	</header>
+	<div id="exercises" class="grid">
+		<div id="exercise-2" class="exercise">
+			<h2>Exercise #2: Publishing Immutable Data (<code class="navy">/ipfs/</code>)</h2>
+			<h4>1. Add avatar image to IPFS</h4>
+			<div>
+				<label>Select a image:</label><br />
+				<input id="addFileInput" type='file' class="pointer" />
+			</div>
+			<div>
+				<label>CID:</label><br />
+				<input id="addCidOutput" readonly />
+			</div>
+			<br />
+			<h4>2. Load avatar from IPFS</h4>
+			<button id='getButton' type="button">Click to load the avatar</button><br />
+			<div>Inlined data: </div>
+			<img id='imageFromCat' />
+			<div>Read from HTTP Gateway:</div>
+			<img id='imageFromGateway' />
+		</div>
+		<div id="exercise-3" class="exercise">
+			<h2>Exercise #3: Updating Mutable Pointers <code class="navy">/ipns/</code></h2>
+			<h3>3. Edit below and add to IPFS</h3>
+			<p>Name:<br /><input id="peerName" /></p>
+			<p>Avatar CID:<br /><input id="peerAvatarCid" /></p>
+			<p>About:<br /><input id="peerAbout" /></p>
+			<p>
+				<pre id="jsonPreview">JSON preview will be shown here.</pre>
+			</p>
+			<p><button id="addJson" type="button">Add to IPFS</button></p>
+			<p>Returned CID:<br /><input id='jsonCid' readonly /></p>
+			<h3>4. Publish CID under <code class="navy">/ipns/{peerId}</code></h3>
+			<button id='publishJson' type="button" disabled>Publish to IPNS</button>
+			<br />
+			<div id='ipnsPublishResult'></div>
+			<h3>5. Check if update got picked up by the Peer Board</h3>
+		</div>
+	</div>
+	<div id="peerBoard-container"></div>
+	<script src="../assets/index.min.js"></script>
+	<script>
+		const DOM = {
+			addFile: document.querySelector('#addFileInput'),
+			loadfile: document.querySelector('#getButton'),
+			cidOutput: document.querySelector('#addCidOutput'),
+			imageViaGateway: document.querySelector('#imageFromGateway'),
+			addProfile: document.querySelector('#addJson'),
+			name: document.querySelector('#peerName'),
+			avatarCid: document.querySelector('#peerAvatarCid'),
+			about: document.querySelector('#peerAbout'),
+			preview: document.querySelector('#jsonPreview'),
+			profileCID: document.querySelector('#jsonCid'),
+			publish: document.querySelector('#publishJson'),
+			publishOutput: document.querySelector('#ipnsPublishResult')
+		}
+		const wsStart = '/dns4/rendezvous.jimpick.com/tcp/9091/wss/p2p-websocket-star'
+		const ipfs = new Ipfs({ EXPERIMENTAL: {ipnsDNS: true}, config: { Addresses: { Swarm: [wsStart] } } })
+
+		ipfs.on('ready', () => {
+
+			DOM.addFile.addEventListener('change', async event => {
+				try {
+					const file = event.target.files[0]
+					const result = await ipfs.add(file)
+					DOM.cidOutput.value = result[0].hash
+				} catch (err) {
+					console.error(err)
+				}
+			})
+
+			DOM.loadfile.addEventListener('click', async event => {
+				try {
+					const httpGateway = 'https://ipfs.io'
+					const cid = DOM.cidOutput.value
+					const imageViaGateway = document.querySelector('#imageFromGateway')
+					DOM.imageViaGateway.src = `${httpGateway}/ipfs/${cid}`
+					const data = await ipfs.cat(cid)
+					const img = data.toString('base64')
+					const imgViaDataURL = document.querySelector('#imageFromCat')
+					imgViaDataURL.src = `data:image/*;base64,${img}`
+				} catch (err) {
+					console.log(err)
+				}
+			})
+
+			DOM.addProfile.addEventListener('click', async event => {
+				try {
+					DOM.preview.innerText = `{"name":"${DOM.name.value}", "avatar":"${DOM.avatarCid.value}", "about":"${DOM.about.value}"}`
+
+
+					const json = window.Ipfs.Buffer.from(DOM.preview.innerText)
+					const response = await ipfs.add(json)
+					const cid = response[0].hash
+
+					console.log('ipfs.add response', response)
+					DOM.profileCID.value = cid
+					DOM.publish.disabled = false
+				} catch (err) {
+					// we don't need to worry about error details in this demo,
+					// but try console.error(err) if you are curious
+				}
+			})
+
+			DOM.publish.addEventListener('click', async event => {
+				try {
+					
+					DOM.publishOutput.textContent = 'Publishing...'
+					const cidToPublish = DOM.profileCID.value
+
+					// TODO publish cid to IPNS
+					// https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/NAME.md#namepublish
+					
+
+					DOM.publishOutput.innerHTML = `<p>Published <strong>${value}</strong><br />under <strong>/ipns/${name}</strong></p>`
+				} catch (err) {
+					console.log(`Unable to read /ipns/${name}: ${err}`)
+				}
+			})
+		})
+
+	</script>
+	<script async type="module" src="../assets/peer-board.js"></script>
+</body>
+
+</html>

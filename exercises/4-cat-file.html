@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Course C Exercise</title>
+	<link href="../assets/style.css" rel="stylesheet" />
+</head>
+<body>
+	<header>
+		<h1><a href="../index.html">IPFS Camp 2019: Course C</a></h1>
+	</header>
+	
+	<div id="exercises" class="grid">
+		<div id="exercise-2" class="exercise">
+				<h2>Exercise #2: Publishing Immutable Data (<code class="navy">/ipfs/</code>)</h2>
+				<h4>1. Add avatar image to IPFS</h4>
+				<div>
+					<label>Select a image:</label><br/>
+					<input id="addFileInput" type='file' class="pointer" />
+				</div>
+				<div>
+					<label>CID:</label><br/>
+					<input id="addCidOutput" readonly />
+				</div>
+				<br/>
+				<h4>2. Load avatar from IPFS</h4>
+				<button id='getButton' type="button">Click to load the avatar</button><br />
+				<div>Inlined data: </div>
+				<img id='imageFromCat' />
+				<div>Read from HTTP Gateway:</div>
+				<img id='imageFromGateway' />
+				<script>
+					const getButton = document.querySelector('#getButton')
+					getButton.addEventListener('click', async event => {
+						try {
+							const cid = addCidOutput.value
+							const imageViaGateway = document.querySelector('#imageFromGateway')
+							imageViaGateway.src = `${httpGateway}/ipfs/${cid}`
+	
+							const data = await ipfs.cat(cid)
+	
+							// Small images can be inlined using Data URLs (RFC 2397)
+							const img = data.toString('base64')
+							const imgViaDataURL = document.querySelector('#imageFromCat')
+							imgViaDataURL.src = `data:image/*;base64,${img}`
+						} catch (err) {
+							console.log(err)
+						}
+					})
+				</script>
+			</div>
+	</div>
+
+	<script src="https://unpkg.com/ipfs/dist/index.min.js"></script>
+    <script>
+		const DOM = {
+			addFile: document.querySelector('#addFileInput'),
+			loadfile: document.querySelector('#getButton'),
+			cidOutput: document.querySelector('#addCidOutput'),
+			imageViaGateway: document.querySelector('#imageFromGateway')
+		}
+		const wsStart = '/dns4/rendezvous.jimpick.com/tcp/9091/wss/p2p-websocket-star'
+		const ipfs = new Ipfs({config: {Addresses: {Swarm: [wsStart]}}})
+		
+		ipfs.on('ready', () => {
+			
+			DOM.addFile.addEventListener('change', async event => {
+				try {
+					const file = event.target.files[0]
+					const result = await ipfs.add(file)
+					DOM.cidOutput.value = result[0].hash
+				} catch (err) {
+					console.error(err)
+				}
+			})
+			DOM.loadfile.addEventListener('click', async event => {
+				try {
+					const httpGateway = 'https://ipfs.io'
+					const cid = DOM.cidOutput.value
+					const imageViaGateway = document.querySelector('#imageFromGateway')
+					DOM.imageViaGateway.src = ''
+					
+					// TODO get the avatar from IPFS using ipfs.cat
+					// https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#ipfscatipfspath-options-callback
+					const data = ''
+
+					// Small images can be inlined using Data URLs (RFC 2397)
+					const img = data.toString('base64')
+					const imgViaDataURL = document.querySelector('#imageFromCat')
+					imgViaDataURL.src = `data:image/*;base64,${img}`
+				} catch (err) {
+					console.log(err)
+				}
+			})
+
+        })
+
+	</script>
+</body>
+</html>
