@@ -4,7 +4,7 @@
   "description": "IPFS Camp 2019 Course C Materials",
   "main": "index.html",
   "scripts": {
-    "start": "npx live-server --port=3000 --ignore=.git",
+    "start": "npx live-server --port=3000 --watch='*.html'",
     "build": "mkdir -p build; cp *.html build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -52,24 +51,12 @@
 			const httpGateway = 'https://ipfs.io'
 			//const websocketStar = '/dnsaddr/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
 			const websocketStar = '/dns4/rendezvous.jimpick.com/tcp/9091/wss/p2p-websocket-star'
-			const boostrapNodes = [
-				'/dns4/node0.preload.ipfs.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
-				'/dns4/node1.preload.ipfs.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6'
-			]
-			const delegateNodes = [
-				'/dns4/node1.preload.ipfs.io/tcp/443/https'
-			]
-
+			
 			// start js-ipfs in page context
 			var ipfs = new window.Ipfs({
 				config: {
-					Bootstrap: boostrapNodes,
 					Addresses: { Swarm: [websocketStar] },
-					/* TODO:
-					Delegates: [delegateNodes]
-					*/
 				},
-				preload: { enabled: true, addresses: delegateNodes },
 				EXPERIMENTAL: {
 					ipnsDNS: true,
 				}
