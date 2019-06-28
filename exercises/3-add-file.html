@@ -11,10 +11,10 @@
 	<header>
 		<h1><a href="../index.html">IPFS Camp 2019: Course C</a></h1>
 	</header>
-	
+
 	<div id="exercises" class="grid">
 		<div id="exercise-2" class="exercise">
-				<h2>Exercise #2: Publishing Immutable Data (<code class="navy">/ipfs/</code>)</h2>
+				<h2>Exercise #3: Adding Data to <code class="navy">/ipfs/</code></h2>
 				<h4>1. Add avatar image to IPFS</h4>
 				<div>
 					<label>Select a image:</label><br/>
@@ -35,15 +35,15 @@
 		}
 		const wsStart = '/dns4/rendezvous.jimpick.com/tcp/9091/wss/p2p-websocket-star'
 		const ipfs = new Ipfs({config: {Addresses: {Swarm: [wsStart]}}})
-		
+
 		ipfs.on('ready', () => {
-			
+
 			DOM.addFile.addEventListener('change', async event => {
 				try {
 					const file = event.target.files[0]
 					// TODO: add the file from the input to IPFS
 					// https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#ipfsadddata-options-callback
-					
+
 
 					console.log('ipfs.add result', result)
 

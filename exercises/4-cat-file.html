@@ -11,10 +11,10 @@
 	<header>
 		<h1><a href="../index.html">IPFS Camp 2019: Course C</a></h1>
 	</header>
-	
+
 	<div id="exercises" class="grid">
-		<div id="exercise-2" class="exercise">
-				<h2>Exercise #2: Publishing Immutable Data (<code class="navy">/ipfs/</code>)</h2>
+		<div id="exercise-4" class="exercise">
+				<h2>Exercise #4: Reading Data from <code class="navy">/ipfs/</code></h2>
 				<h4>1. Add avatar image to IPFS</h4>
 				<div>
 					<label>Select a image:</label><br/>
@@ -38,9 +38,9 @@
 							const cid = addCidOutput.value
 							const imageViaGateway = document.querySelector('#imageFromGateway')
 							imageViaGateway.src = `${httpGateway}/ipfs/${cid}`
-	
+
 							const data = await ipfs.cat(cid)
-	
+
 							// Small images can be inlined using Data URLs (RFC 2397)
 							const img = data.toString('base64')
 							const imgViaDataURL = document.querySelector('#imageFromCat')
@@ -63,9 +63,9 @@
 		}
 		const wsStart = '/dns4/rendezvous.jimpick.com/tcp/9091/wss/p2p-websocket-star'
 		const ipfs = new Ipfs({config: {Addresses: {Swarm: [wsStart]}}})
-		
+
 		ipfs.on('ready', () => {
-			
+
 			DOM.addFile.addEventListener('change', async event => {
 				try {
 					const file = event.target.files[0]
@@ -81,7 +81,7 @@
 					const cid = DOM.cidOutput.value
 					const imageViaGateway = document.querySelector('#imageFromGateway')
 					DOM.imageViaGateway.src = ''
-					
+
 					// TODO get the avatar from IPFS using ipfs.cat
 					// https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/FILES.md#ipfscatipfspath-options-callback
 					const data = ''

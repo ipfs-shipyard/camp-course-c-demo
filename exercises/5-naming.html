@@ -15,7 +15,6 @@
 	</header>
 	<div id="exercises" class="grid">
 		<div id="exercise-2" class="exercise">
-			<h2>Exercise #2: Publishing Immutable Data (<code class="navy">/ipfs/</code>)</h2>
 			<h4>1. Add avatar image to IPFS</h4>
 			<div>
 				<label>Select a image:</label><br />
@@ -34,7 +33,7 @@
 			<img id='imageFromGateway' />
 		</div>
 		<div id="exercise-3" class="exercise">
-			<h2>Exercise #3: Updating Mutable Pointers <code class="navy">/ipns/</code></h2>
+			<h2>Exercise #5: Updating Mutable Pointers <code class="navy">/ipns/</code></h2>
 			<h3>3. Edit below and add to IPFS</h3>
 			<p>Name:<br /><input id="peerName" /></p>
 			<p>Avatar CID:<br /><input id="peerAvatarCid" /></p>
@@ -118,13 +117,13 @@
 
 			DOM.publish.addEventListener('click', async event => {
 				try {
-					
+
 					DOM.publishOutput.textContent = 'Publishing...'
 					const cidToPublish = DOM.profileCID.value
 
 					// TODO publish cid to IPNS
 					// https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/NAME.md#namepublish
-					
+
 
 					DOM.publishOutput.innerHTML = `<p>Published <strong>${value}</strong><br />under <strong>/ipns/${name}</strong></p>`
 				} catch (err) {

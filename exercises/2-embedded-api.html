@@ -12,16 +12,16 @@
 		<h1><a href="../index.html">IPFS Camp 2019: Course C</a></h1>
 	</header>
 	<div id="exercises" class="grid">
-		<div id="exercise-1" class="exercise">
-			<h2>Exercise #1: Talking to API from JS</h2>
-			<p>1. Initialize API instance under <code>ipfs</code> variable</p>
+		<div id="exercise-2" class="exercise">
+			<h2>Exercise #2: Talking to embedded node from JS</h2>
+			<p>1. Initialize js-ipfs instance under <code>ipfs</code> variable</p>
 			<p>2. Execute <code>ipfs.id()</code> to see what is on the other end</p>
 			<p>3. If it works, you will see returned output below:</p>
 			<p>
 				<pre id="ipfsId">(result of "ipfs id" will appear here)</pre>
 			</p>
 		</div>
-		
+
 		<!-- END EXERCISE 1 -->
 	</div>
 	<div id="peerBoard-container"></div>
@@ -31,16 +31,16 @@
 
     <script>
 		const wsStart = '/dns4/rendezvous.jimpick.com/tcp/9091/wss/p2p-websocket-star'
-		
+
 		// TODO: Initialize and configure js-ipfs
 		// https://github.com/ipfs/js-ipfs#use-in-the-browser
 		// https://github.com/ipfs/js-ipfs#is-there-a-more-stable-alternative-to-webrtc-star-that-offers-a-similar-functionality
-		
+
 		const ipfs =''
 
         const ipfsId = document.querySelector('#ipfsId')
 		// ipfsId.textContent = JSON.stringify(id, null, 2)
-		
+
 		ipfs.on('ready', () => {
             // TODO: use the http client to find the remote daemon ID
 			// https://github.com/ipfs/interface-js-ipfs-core/blob/master/SPEC/MISCELLANEOUS.md#ipfsidcallback
