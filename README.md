@@ -12,15 +12,6 @@ cd camp-course-c-demo
 npm start
 ```
 
-## To run on CodeSandbox
-
-Open the following URL in your browser:
-
-https://codesandbox.io/s/github/ipfs-shipyard/camp-course-c-demo
-
-When you save your first modification, it will create a 'forked' project
-that is your own.
-
 ## Slide deck
 
 [WIP version can be previewed here](https://docs.google.com/presentation/d/1cbJD5j_jRpm3yJiE6hLIOzMn8iMhvzyci7Ut3NLjqxs/edit?usp=sharing), PDF will be published after IPFS Camp :-)
