@@ -23,4 +23,4 @@ that is your own.
 
 ## Slide deck
 
-[WIP version can be preview here](https://docs.google.com/presentation/d/1cbJD5j_jRpm3yJiE6hLIOzMn8iMhvzyci7Ut3NLjqxs/edit?usp=sharing), PDF will be published after IPFS Camp :-)
+[WIP version can be previewed here](https://docs.google.com/presentation/d/1cbJD5j_jRpm3yJiE6hLIOzMn8iMhvzyci7Ut3NLjqxs/edit?usp=sharing), PDF will be published after IPFS Camp :-)
