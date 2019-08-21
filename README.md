@@ -14,4 +14,6 @@ npm start
 
 ## Slide deck
 
-[WIP version can be previewed here](https://docs.google.com/presentation/d/1cbJD5j_jRpm3yJiE6hLIOzMn8iMhvzyci7Ut3NLjqxs/edit?usp=sharing), PDF will be published after IPFS Camp :-)
+
+- [PDF](https://github.com/ipfs/camp/files/3525750/IPFS.Camp.2019.-.Core.Course.C.-.Slide.Deck.pdf) (read-only)
+- [Google Docs](https://docs.google.com/presentation/d/1cbJD5j_jRpm3yJiE6hLIOzMn8iMhvzyci7Ut3NLjqxs/edit?usp=sharing) (copy & edit)
